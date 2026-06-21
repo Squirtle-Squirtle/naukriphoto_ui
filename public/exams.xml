@@ -1,0 +1,429 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ════════════════════════════════════════════════════════════════════════
+  NaukariPhoto catalog — single source of truth for every exam & service.
+
+  HOW TO ADD A NEW EXAM OR SERVICE
+  ─────────────────────────────────
+  1. Copy one <entry> block below (an exam or a service) and paste it
+     before the closing </catalog> tag.
+  2. Change the `id` to something unique, lowercase, no spaces (e.g. "cmat").
+  3. Set `type` to "exam" or "service".
+  4. Set `name` — this is ALL that shows on the card (e.g. "JEE Main").
+     Do not put full forms here; that goes in <fullName>, which is only
+     shown inside the expanded detail view, not on the card.
+  5. Set `logo` to a file under /public/logos/ (any png/svg/jpg/webp).
+     Drop your image file into public/logos/ with that exact filename —
+     no code changes needed.
+  6. Set `color` (used for accents) and `bg` (used for the card background
+     when active) as hex values.
+  7. List each required document under <documents>. For every <document>:
+       - id        → unique within this entry
+       - label     → shown to the user
+       - type      → one of: photo | signature | id | document
+                     (controls which icon renders — see iconMap in code)
+       - required  → true | false
+       - format    → accepted file formats, comma separated (e.g. "JPG,PNG")
+       - minSizeKB / maxSizeKB → file size bounds in kilobytes
+       - <dimensions> → at least ONE of <px> or <physical> must be present.
+             <px width="..." height=".../>                — pixel-exact spec
+             <physical width="..." height="..." unit="cm|inch" dpi="..."/>
+                                                            — physical spec
+         If both are present, <px> is treated as authoritative and
+         <physical> is shown as a secondary reference (handy when the
+         exam's own notification states cm/inch instead of px).
+       - background (optional) → expected photo background, free text
+  8. That's it — the UI (cards, expanded view, document checklist) is
+     entirely generated from this file. No component code needs to change.
+  ════════════════════════════════════════════════════════════════════════
+-->
+<catalog>
+
+  <!-- ═══════════════════════════ EXAMS ═══════════════════════════ -->
+
+  <entry id="jee" type="exam">
+    <name>JEE Main</name>
+    <fullName>Joint Entrance Examination</fullName>
+    <category>Engineering</category>
+    <logo>jee.svg</logo>
+    <color>#3b3bf5</color>
+    <bg>#eeeeff</bg>
+    <date>Jan – Apr 2026</date>
+    <documents>
+      <document id="photo" type="photo" required="true">
+        <label>Passport Photo</label>
+        <format>JPG,PNG</format>
+        <minSizeKB>10</minSizeKB>
+        <maxSizeKB>200</maxSizeKB>
+        <dimensions>
+          <px width="350" height="450"/>
+          <physical width="3.5" height="4.5" unit="cm" dpi="254"/>
+        </dimensions>
+        <background>White background</background>
+      </document>
+      <document id="signature" type="signature" required="true">
+        <label>Signature</label>
+        <format>JPG,PNG</format>
+        <minSizeKB>4</minSizeKB>
+        <maxSizeKB>30</maxSizeKB>
+        <dimensions>
+          <px width="350" height="150"/>
+          <physical width="3.5" height="1.5" unit="cm" dpi="254"/>
+        </dimensions>
+        <background>White background</background>
+      </document>
+      <document id="id" type="id" required="true">
+        <label>Photo ID Proof</label>
+        <format>PDF,JPG</format>
+        <maxSizeKB>1024</maxSizeKB>
+        <notes>Aadhaar / PAN / Passport</notes>
+      </document>
+      <document id="marks" type="document" required="true">
+        <label>Class 10 Marksheet</label>
+        <format>PDF</format>
+        <maxSizeKB>2048</maxSizeKB>
+        <notes>Original or scanned copy</notes>
+      </document>
+    </documents>
+  </entry>
+
+  <entry id="neet" type="exam">
+    <name>NEET UG</name>
+    <fullName>National Eligibility cum Entrance Test</fullName>
+    <category>Medical</category>
+    <logo>neet.svg</logo>
+    <color>#0ea5e9</color>
+    <bg>#e0f5ff</bg>
+    <date>May 2026</date>
+    <documents>
+      <document id="photo" type="photo" required="true">
+        <label>Passport Photo</label>
+        <format>JPG</format>
+        <minSizeKB>10</minSizeKB>
+        <maxSizeKB>200</maxSizeKB>
+        <dimensions>
+          <px width="350" height="450"/>
+          <physical width="3.5" height="4.5" unit="cm" dpi="254"/>
+        </dimensions>
+        <background>Light background</background>
+      </document>
+      <document id="signature" type="signature" required="true">
+        <label>Signature</label>
+        <format>JPG</format>
+        <minSizeKB>4</minSizeKB>
+        <maxSizeKB>30</maxSizeKB>
+        <dimensions>
+          <px width="350" height="150"/>
+          <physical width="3.5" height="1.5" unit="cm" dpi="254"/>
+        </dimensions>
+        <background>White background</background>
+      </document>
+      <document id="id" type="id" required="true">
+        <label>Government ID</label>
+        <format>JPG,PDF</format>
+        <maxSizeKB>500</maxSizeKB>
+        <notes>Aadhaar / Passport</notes>
+      </document>
+      <document id="category" type="document" required="false">
+        <label>Category Certificate</label>
+        <format>PDF</format>
+        <maxSizeKB>1024</maxSizeKB>
+        <notes>SC/ST/OBC/EWS</notes>
+      </document>
+      <document id="disability" type="document" required="false">
+        <label>PwD Certificate</label>
+        <format>PDF</format>
+        <maxSizeKB>1024</maxSizeKB>
+        <notes>If applicable</notes>
+      </document>
+    </documents>
+  </entry>
+
+  <entry id="upsc" type="exam">
+    <name>UPSC CSE</name>
+    <fullName>Civil Services Examination</fullName>
+    <category>Government</category>
+    <logo>upsc.svg</logo>
+    <color>#8b5cf6</color>
+    <bg>#f0ebff</bg>
+    <date>Feb – Sep 2026</date>
+    <documents>
+      <document id="photo" type="photo" required="true">
+        <label>Passport Photo</label>
+        <format>JPG</format>
+        <maxSizeKB>300</maxSizeKB>
+        <dimensions>
+          <px width="350" height="450"/>
+          <physical width="35" height="45" unit="mm" dpi="254"/>
+        </dimensions>
+        <background>White background</background>
+      </document>
+      <document id="signature" type="signature" required="true">
+        <label>Signature</label>
+        <format>JPG</format>
+        <maxSizeKB>100</maxSizeKB>
+        <dimensions>
+          <px width="236" height="709"/>
+          <physical width="20" height="60" unit="mm" dpi="300"/>
+        </dimensions>
+      </document>
+      <document id="id" type="id" required="true">
+        <label>Photo ID</label>
+        <format>PDF,JPG</format>
+        <maxSizeKB>1024</maxSizeKB>
+        <notes>Any govt-issued ID</notes>
+      </document>
+      <document id="degree" type="document" required="true">
+        <label>Degree Certificate</label>
+        <format>PDF</format>
+        <maxSizeKB>2048</maxSizeKB>
+        <notes>Bachelor's degree</notes>
+      </document>
+      <document id="dob" type="document" required="true">
+        <label>Date of Birth Proof</label>
+        <format>PDF</format>
+        <notes>Class 10 certificate</notes>
+      </document>
+    </documents>
+  </entry>
+
+  <entry id="gate" type="exam">
+    <name>GATE</name>
+    <fullName>Graduate Aptitude Test in Engineering</fullName>
+    <category>Engineering</category>
+    <logo>gate.svg</logo>
+    <color>#10b981</color>
+    <bg>#e6faf4</bg>
+    <date>Feb 2026</date>
+    <documents>
+      <document id="photo" type="photo" required="true">
+        <label>Passport Photo</label>
+        <format>JPG</format>
+        <maxSizeKB>500</maxSizeKB>
+        <dimensions>
+          <px width="480" height="640"/>
+        </dimensions>
+        <background>White background</background>
+      </document>
+      <document id="signature" type="signature" required="true">
+        <label>Signature</label>
+        <format>JPG</format>
+        <maxSizeKB>200</maxSizeKB>
+        <dimensions>
+          <px width="160" height="560"/>
+        </dimensions>
+      </document>
+      <document id="id" type="id" required="true">
+        <label>Photo ID</label>
+        <format>JPG,PDF</format>
+        <notes>Aadhaar / Passport / Driving License</notes>
+      </document>
+      <document id="qualifying" type="document" required="true">
+        <label>Qualifying Degree Certificate</label>
+        <format>PDF</format>
+        <maxSizeKB>2048</maxSizeKB>
+      </document>
+      <document id="category" type="document" required="false">
+        <label>Category Certificate</label>
+        <format>PDF</format>
+        <maxSizeKB>1024</maxSizeKB>
+        <notes>SC/ST/PwD</notes>
+      </document>
+    </documents>
+  </entry>
+
+  <entry id="cat" type="exam">
+    <name>CAT</name>
+    <fullName>Common Admission Test</fullName>
+    <category>Management</category>
+    <logo>cat.svg</logo>
+    <color>#f59e0b</color>
+    <bg>#fff8e0</bg>
+    <date>Nov 2026</date>
+    <documents>
+      <document id="photo" type="photo" required="true">
+        <label>Passport Photo</label>
+        <format>JPG</format>
+        <minSizeKB>20</minSizeKB>
+        <maxSizeKB>50</maxSizeKB>
+        <dimensions>
+          <px width="350" height="450"/>
+          <physical width="3.5" height="4.5" unit="cm" dpi="254"/>
+        </dimensions>
+        <background>White background</background>
+      </document>
+      <document id="signature" type="signature" required="true">
+        <label>Signature</label>
+        <format>JPG</format>
+        <minSizeKB>10</minSizeKB>
+        <maxSizeKB>20</maxSizeKB>
+        <dimensions>
+          <px width="350" height="150"/>
+          <physical width="3.5" height="1.5" unit="cm" dpi="254"/>
+        </dimensions>
+      </document>
+      <document id="degree" type="document" required="true">
+        <label>Bachelor's Degree</label>
+        <format>PDF</format>
+        <maxSizeKB>2048</maxSizeKB>
+      </document>
+      <document id="transcript" type="document" required="false">
+        <label>Final Year Transcript</label>
+        <format>PDF</format>
+        <maxSizeKB>1024</maxSizeKB>
+      </document>
+    </documents>
+  </entry>
+
+  <entry id="ssc" type="exam">
+    <name>SSC CGL</name>
+    <fullName>Staff Selection Commission CGL</fullName>
+    <category>Government</category>
+    <logo>ssc.svg</logo>
+    <color>#ef4444</color>
+    <bg>#fff0f0</bg>
+    <date>Jun – Sep 2026</date>
+    <documents>
+      <document id="photo" type="photo" required="true">
+        <label>Recent Photograph</label>
+        <format>JPG</format>
+        <minSizeKB>4</minSizeKB>
+        <maxSizeKB>12</maxSizeKB>
+        <dimensions>
+          <physical width="1" height="1" unit="inch" dpi="200"/>
+        </dimensions>
+        <background>Plain background</background>
+      </document>
+      <document id="signature" type="signature" required="true">
+        <label>Signature</label>
+        <format>JPG</format>
+        <minSizeKB>1</minSizeKB>
+        <maxSizeKB>3</maxSizeKB>
+        <dimensions>
+          <physical width="2.5" height="7.5" unit="cm" dpi="200"/>
+        </dimensions>
+      </document>
+      <document id="dob" type="document" required="true">
+        <label>Date of Birth Certificate</label>
+        <format>PDF</format>
+        <maxSizeKB>1024</maxSizeKB>
+        <notes>Class 10 marksheet</notes>
+      </document>
+      <document id="degree" type="document" required="true">
+        <label>Graduation Degree</label>
+        <format>PDF</format>
+        <maxSizeKB>2048</maxSizeKB>
+      </document>
+      <document id="noc" type="document" required="false">
+        <label>No Objection Certificate</label>
+        <format>PDF</format>
+        <maxSizeKB>1024</maxSizeKB>
+        <notes>If employed in Govt.</notes>
+      </document>
+    </documents>
+  </entry>
+
+  <!-- ═══════════════════════ GENERAL SERVICES ═══════════════════════
+       Non-exam utilities: everyday photo/document needs that don't
+       belong to a specific exam (passport photo, PAN card photo, etc).
+       Same schema as exams — only `type="service"` differs, which is
+       what routes these into the "General Services" section instead
+       of "Recent Exams".
+  -->
+
+  <entry id="passport" type="service">
+    <name>Passport Photo</name>
+    <fullName>Indian Passport Application Photo</fullName>
+    <category>Travel</category>
+    <logo>passport.svg</logo>
+    <color>#1d4ed8</color>
+    <bg>#e8efff</bg>
+    <date>Always available</date>
+    <documents>
+      <document id="photo" type="photo" required="true">
+        <label>Passport Photo</label>
+        <format>JPG</format>
+        <maxSizeKB>1024</maxSizeKB>
+        <dimensions>
+          <px width="600" height="600"/>
+          <physical width="2" height="2" unit="inch" dpi="300"/>
+        </dimensions>
+        <background>White background, square crop, face covering 70-80% of frame</background>
+      </document>
+    </documents>
+  </entry>
+
+  <entry id="pan" type="service">
+    <name>PAN Card</name>
+    <fullName>Permanent Account Number Photo</fullName>
+    <category>Government ID</category>
+    <logo>pan.svg</logo>
+    <color>#0f766e</color>
+    <bg>#e3faf5</bg>
+    <date>Always available</date>
+    <documents>
+      <document id="photo" type="photo" required="true">
+        <label>Passport Photo</label>
+        <format>JPG</format>
+        <maxSizeKB>500</maxSizeKB>
+        <dimensions>
+          <px width="197" height="197"/>
+          <physical width="2.5" height="2.5" unit="cm" dpi="200"/>
+        </dimensions>
+        <background>White background</background>
+      </document>
+      <document id="signature" type="signature" required="true">
+        <label>Signature</label>
+        <format>JPG</format>
+        <maxSizeKB>200</maxSizeKB>
+        <dimensions>
+          <px width="255" height="85"/>
+        </dimensions>
+      </document>
+    </documents>
+  </entry>
+
+  <entry id="visa" type="service">
+    <name>US Visa</name>
+    <fullName>US Visa Application Photo (DS-160)</fullName>
+    <category>Travel</category>
+    <logo>visa.svg</logo>
+    <color>#b91c1c</color>
+    <bg>#ffecec</bg>
+    <date>Always available</date>
+    <documents>
+      <document id="photo" type="photo" required="true">
+        <label>Visa Photo</label>
+        <format>JPG</format>
+        <maxSizeKB>240</maxSizeKB>
+        <dimensions>
+          <px width="600" height="600"/>
+          <physical width="2" height="2" unit="inch" dpi="300"/>
+        </dimensions>
+        <background>Plain white or off-white background</background>
+      </document>
+    </documents>
+  </entry>
+
+  <entry id="resume" type="service">
+    <name>Resume Photo</name>
+    <fullName>Professional Resume / LinkedIn Photo</fullName>
+    <category>Career</category>
+    <logo>resume.svg</logo>
+    <color>#7c3aed</color>
+    <bg>#f2ecff</bg>
+    <date>Always available</date>
+    <documents>
+      <document id="photo" type="photo" required="true">
+        <label>Professional Headshot</label>
+        <format>JPG,PNG</format>
+        <maxSizeKB>2048</maxSizeKB>
+        <dimensions>
+          <px width="400" height="400"/>
+        </dimensions>
+        <background>Neutral or blurred background</background>
+      </document>
+    </documents>
+  </entry>
+
+</catalog>
