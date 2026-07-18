@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Camera, History, Phone, Heart, HelpCircle, Menu, X, ArrowRight } from "lucide-react";
-
+import { Search } from "lucide-react";
 const NAV_LINKS = [
   { label: "Past Exams", icon: <History size={15} /> },
   { label: "Contact Us", icon: <Phone size={15} /> },
@@ -16,16 +16,12 @@ export default function Navbar() {
       <div className="max-w-6xl mx-auto px-5 h-14 flex items-center justify-between gap-4">
 
         {/* Logo */}
-        <div className="flex items-center gap-2.5 shrink-0">
-          <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center">
-            <Camera size={16} className="text-white" />
-          </div>
-          <span
-            className="font-extrabold text-foreground text-lg tracking-tight"
-            style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}
-          >
-            Naukari<span className="text-primary">Photo</span>
-          </span>
+        <div className="flex items-center shrink-0">
+        <img
+          src="logos/logo.png"
+          alt="NaukariPhoto"
+          className="h-23 w-auto object-contain"
+        />
         </div>
 
         {/* Desktop nav links */}
@@ -42,9 +38,14 @@ export default function Navbar() {
         </nav>
 
         {/* CTA */}
-        <button className="hidden md:flex items-center gap-1.5 px-4 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 transition">
-          Get Started <ArrowRight size={14} />
-        </button>
+        <div className="hidden md:flex items-center px-3 py-2 rounded-xl border border-gray-200 bg-white shadow-sm focus-within:ring-2 focus-within:ring-primary">
+  <Search size={16} className="text-gray-400 mr-2" />
+  <input
+    type="text"
+    placeholder="Search..."
+    className="outline-none text-sm bg-transparent w-25"
+  />
+</div>
 
         {/* Mobile hamburger */}
         <button
