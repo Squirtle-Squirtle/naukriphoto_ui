@@ -109,7 +109,8 @@ function parseEntry(entryEl) {
   const typeRaw = entryEl.getAttribute("type");
   if (!id) return null;
 
-  const type = typeRaw === "service" ? "service" : "exam";
+  const nonExamTypes = new Set(["service", "profile", "document"]);
+  const type = nonExamTypes.has(typeRaw) ? "service" : "exam";
   const name = text(entryEl.querySelector(":scope > name"));
   const fullName = text(entryEl.querySelector(":scope > fullName")) || name;
   const category = text(entryEl.querySelector(":scope > category"));
