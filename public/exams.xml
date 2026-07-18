@@ -1,429 +1,3342 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
-  ════════════════════════════════════════════════════════════════════════
-  NaukariPhoto catalog — single source of truth for every exam & service.
-
-  HOW TO ADD A NEW EXAM OR SERVICE
-  ─────────────────────────────────
-  1. Copy one <entry> block below (an exam or a service) and paste it
-     before the closing </catalog> tag.
-  2. Change the `id` to something unique, lowercase, no spaces (e.g. "cmat").
-  3. Set `type` to "exam" or "service".
-  4. Set `name` — this is ALL that shows on the card (e.g. "JEE Main").
-     Do not put full forms here; that goes in <fullName>, which is only
-     shown inside the expanded detail view, not on the card.
-  5. Set `logo` to a file under /public/logos/ (any png/svg/jpg/webp).
-     Drop your image file into public/logos/ with that exact filename —
-     no code changes needed.
-  6. Set `color` (used for accents) and `bg` (used for the card background
-     when active) as hex values.
-  7. List each required document under <documents>. For every <document>:
-       - id        → unique within this entry
-       - label     → shown to the user
-       - type      → one of: photo | signature | id | document
-                     (controls which icon renders — see iconMap in code)
-       - required  → true | false
-       - format    → accepted file formats, comma separated (e.g. "JPG,PNG")
-       - minSizeKB / maxSizeKB → file size bounds in kilobytes
-       - <dimensions> → at least ONE of <px> or <physical> must be present.
-             <px width="..." height=".../>                — pixel-exact spec
-             <physical width="..." height="..." unit="cm|inch" dpi="..."/>
-                                                            — physical spec
-         If both are present, <px> is treated as authoritative and
-         <physical> is shown as a secondary reference (handy when the
-         exam's own notification states cm/inch instead of px).
-       - background (optional) → expected photo background, free text
-  8. That's it — the UI (cards, expanded view, document checklist) is
-     entirely generated from this file. No component code needs to change.
-  ════════════════════════════════════════════════════════════════════════
--->
 <catalog>
-
-  <!-- ═══════════════════════════ EXAMS ═══════════════════════════ -->
-
-  <entry id="jee" type="exam">
-    <name>JEE Main</name>
-    <fullName>Joint Entrance Examination</fullName>
-    <category>Engineering</category>
-    <logo>jee.svg</logo>
-    <color>#3b3bf5</color>
-    <bg>#eeeeff</bg>
-    <date>Jan – Apr 2026</date>
-    <documents>
-      <document id="photo" type="photo" required="true">
-        <label>Passport Photo</label>
-        <format>JPG,PNG</format>
-        <minSizeKB>10</minSizeKB>
-        <maxSizeKB>200</maxSizeKB>
-        <dimensions>
-          <px width="350" height="450"/>
-          <physical width="3.5" height="4.5" unit="cm" dpi="254"/>
-        </dimensions>
-        <background>White background</background>
-      </document>
-      <document id="signature" type="signature" required="true">
-        <label>Signature</label>
-        <format>JPG,PNG</format>
-        <minSizeKB>4</minSizeKB>
-        <maxSizeKB>30</maxSizeKB>
-        <dimensions>
-          <px width="350" height="150"/>
-          <physical width="3.5" height="1.5" unit="cm" dpi="254"/>
-        </dimensions>
-        <background>White background</background>
-      </document>
-      <document id="id" type="id" required="true">
-        <label>Photo ID Proof</label>
-        <format>PDF,JPG</format>
-        <maxSizeKB>1024</maxSizeKB>
-        <notes>Aadhaar / PAN / Passport</notes>
-      </document>
-      <document id="marks" type="document" required="true">
-        <label>Class 10 Marksheet</label>
-        <format>PDF</format>
-        <maxSizeKB>2048</maxSizeKB>
-        <notes>Original or scanned copy</notes>
-      </document>
-    </documents>
-  </entry>
-
-  <entry id="neet" type="exam">
-    <name>NEET UG</name>
-    <fullName>National Eligibility cum Entrance Test</fullName>
-    <category>Medical</category>
-    <logo>neet.svg</logo>
-    <color>#0ea5e9</color>
-    <bg>#e0f5ff</bg>
-    <date>May 2026</date>
-    <documents>
-      <document id="photo" type="photo" required="true">
-        <label>Passport Photo</label>
-        <format>JPG</format>
-        <minSizeKB>10</minSizeKB>
-        <maxSizeKB>200</maxSizeKB>
-        <dimensions>
-          <px width="350" height="450"/>
-          <physical width="3.5" height="4.5" unit="cm" dpi="254"/>
-        </dimensions>
-        <background>Light background</background>
-      </document>
-      <document id="signature" type="signature" required="true">
-        <label>Signature</label>
-        <format>JPG</format>
-        <minSizeKB>4</minSizeKB>
-        <maxSizeKB>30</maxSizeKB>
-        <dimensions>
-          <px width="350" height="150"/>
-          <physical width="3.5" height="1.5" unit="cm" dpi="254"/>
-        </dimensions>
-        <background>White background</background>
-      </document>
-      <document id="id" type="id" required="true">
-        <label>Government ID</label>
-        <format>JPG,PDF</format>
-        <maxSizeKB>500</maxSizeKB>
-        <notes>Aadhaar / Passport</notes>
-      </document>
-      <document id="category" type="document" required="false">
-        <label>Category Certificate</label>
-        <format>PDF</format>
-        <maxSizeKB>1024</maxSizeKB>
-        <notes>SC/ST/OBC/EWS</notes>
-      </document>
-      <document id="disability" type="document" required="false">
-        <label>PwD Certificate</label>
-        <format>PDF</format>
-        <maxSizeKB>1024</maxSizeKB>
-        <notes>If applicable</notes>
-      </document>
-    </documents>
-  </entry>
-
-  <entry id="upsc" type="exam">
-    <name>UPSC CSE</name>
-    <fullName>Civil Services Examination</fullName>
-    <category>Government</category>
-    <logo>upsc.svg</logo>
-    <color>#8b5cf6</color>
-    <bg>#f0ebff</bg>
-    <date>Feb – Sep 2026</date>
-    <documents>
-      <document id="photo" type="photo" required="true">
-        <label>Passport Photo</label>
-        <format>JPG</format>
-        <maxSizeKB>300</maxSizeKB>
-        <dimensions>
-          <px width="350" height="450"/>
-          <physical width="35" height="45" unit="mm" dpi="254"/>
-        </dimensions>
-        <background>White background</background>
-      </document>
-      <document id="signature" type="signature" required="true">
-        <label>Signature</label>
-        <format>JPG</format>
-        <maxSizeKB>100</maxSizeKB>
-        <dimensions>
-          <px width="236" height="709"/>
-          <physical width="20" height="60" unit="mm" dpi="300"/>
-        </dimensions>
-      </document>
-      <document id="id" type="id" required="true">
-        <label>Photo ID</label>
-        <format>PDF,JPG</format>
-        <maxSizeKB>1024</maxSizeKB>
-        <notes>Any govt-issued ID</notes>
-      </document>
-      <document id="degree" type="document" required="true">
-        <label>Degree Certificate</label>
-        <format>PDF</format>
-        <maxSizeKB>2048</maxSizeKB>
-        <notes>Bachelor's degree</notes>
-      </document>
-      <document id="dob" type="document" required="true">
-        <label>Date of Birth Proof</label>
-        <format>PDF</format>
-        <notes>Class 10 certificate</notes>
-      </document>
-    </documents>
-  </entry>
-
-  <entry id="gate" type="exam">
-    <name>GATE</name>
-    <fullName>Graduate Aptitude Test in Engineering</fullName>
-    <category>Engineering</category>
-    <logo>gate.svg</logo>
-    <color>#10b981</color>
-    <bg>#e6faf4</bg>
-    <date>Feb 2026</date>
-    <documents>
-      <document id="photo" type="photo" required="true">
-        <label>Passport Photo</label>
-        <format>JPG</format>
-        <maxSizeKB>500</maxSizeKB>
-        <dimensions>
-          <px width="480" height="640"/>
-        </dimensions>
-        <background>White background</background>
-      </document>
-      <document id="signature" type="signature" required="true">
-        <label>Signature</label>
-        <format>JPG</format>
-        <maxSizeKB>200</maxSizeKB>
-        <dimensions>
-          <px width="160" height="560"/>
-        </dimensions>
-      </document>
-      <document id="id" type="id" required="true">
-        <label>Photo ID</label>
-        <format>JPG,PDF</format>
-        <notes>Aadhaar / Passport / Driving License</notes>
-      </document>
-      <document id="qualifying" type="document" required="true">
-        <label>Qualifying Degree Certificate</label>
-        <format>PDF</format>
-        <maxSizeKB>2048</maxSizeKB>
-      </document>
-      <document id="category" type="document" required="false">
-        <label>Category Certificate</label>
-        <format>PDF</format>
-        <maxSizeKB>1024</maxSizeKB>
-        <notes>SC/ST/PwD</notes>
-      </document>
-    </documents>
-  </entry>
-
-  <entry id="cat" type="exam">
-    <name>CAT</name>
-    <fullName>Common Admission Test</fullName>
-    <category>Management</category>
-    <logo>cat.svg</logo>
-    <color>#f59e0b</color>
-    <bg>#fff8e0</bg>
-    <date>Nov 2026</date>
-    <documents>
-      <document id="photo" type="photo" required="true">
-        <label>Passport Photo</label>
-        <format>JPG</format>
-        <minSizeKB>20</minSizeKB>
-        <maxSizeKB>50</maxSizeKB>
-        <dimensions>
-          <px width="350" height="450"/>
-          <physical width="3.5" height="4.5" unit="cm" dpi="254"/>
-        </dimensions>
-        <background>White background</background>
-      </document>
-      <document id="signature" type="signature" required="true">
-        <label>Signature</label>
-        <format>JPG</format>
-        <minSizeKB>10</minSizeKB>
-        <maxSizeKB>20</maxSizeKB>
-        <dimensions>
-          <px width="350" height="150"/>
-          <physical width="3.5" height="1.5" unit="cm" dpi="254"/>
-        </dimensions>
-      </document>
-      <document id="degree" type="document" required="true">
-        <label>Bachelor's Degree</label>
-        <format>PDF</format>
-        <maxSizeKB>2048</maxSizeKB>
-      </document>
-      <document id="transcript" type="document" required="false">
-        <label>Final Year Transcript</label>
-        <format>PDF</format>
-        <maxSizeKB>1024</maxSizeKB>
-      </document>
-    </documents>
-  </entry>
-
-  <entry id="ssc" type="exam">
-    <name>SSC CGL</name>
-    <fullName>Staff Selection Commission CGL</fullName>
+<entry id="ssc-chsl" type="exam">
+    <name>SSC CHSL</name>
+    <fullName>Staff Selection Commission Combined Higher Secondary Level</fullName>
     <category>Government</category>
     <logo>ssc.svg</logo>
     <color>#ef4444</color>
     <bg>#fff0f0</bg>
-    <date>Jun – Sep 2026</date>
     <documents>
-      <document id="photo" type="photo" required="true">
-        <label>Recent Photograph</label>
-        <format>JPG</format>
-        <minSizeKB>4</minSizeKB>
-        <maxSizeKB>12</maxSizeKB>
-        <dimensions>
-          <physical width="1" height="1" unit="inch" dpi="200"/>
-        </dimensions>
-        <background>Plain background</background>
-      </document>
-      <document id="signature" type="signature" required="true">
-        <label>Signature</label>
-        <format>JPG</format>
-        <minSizeKB>1</minSizeKB>
-        <maxSizeKB>3</maxSizeKB>
-        <dimensions>
-          <physical width="2.5" height="7.5" unit="cm" dpi="200"/>
-        </dimensions>
-      </document>
-      <document id="dob" type="document" required="true">
-        <label>Date of Birth Certificate</label>
-        <format>PDF</format>
-        <maxSizeKB>1024</maxSizeKB>
-        <notes>Class 10 marksheet</notes>
-      </document>
-      <document id="degree" type="document" required="true">
-        <label>Graduation Degree</label>
-        <format>PDF</format>
-        <maxSizeKB>2048</maxSizeKB>
-      </document>
-      <document id="noc" type="document" required="false">
-        <label>No Objection Certificate</label>
-        <format>PDF</format>
-        <maxSizeKB>1024</maxSizeKB>
-        <notes>If employed in Govt.</notes>
-      </document>
+
+        <document id="photo" type="photo" required="true">
+            <label>Photograph</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>20</minSizeKB>
+            <maxSizeKB>50</maxSizeKB>
+            <dimensions>
+                <px width="200" height="230"/>
+            </dimensions>
+            <background>Light/plain background</background>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>10</minSizeKB>
+            <maxSizeKB>20</maxSizeKB>
+            <dimensions>
+                <px width="140" height="60"/>
+            </dimensions>
+            <background>White paper with black ink</background>
+        </document>
+
     </documents>
-  </entry>
+</entry>
 
-  <!-- ═══════════════════════ GENERAL SERVICES ═══════════════════════
-       Non-exam utilities: everyday photo/document needs that don't
-       belong to a specific exam (passport photo, PAN card photo, etc).
-       Same schema as exams — only `type="service"` differs, which is
-       what routes these into the "General Services" section instead
-       of "Recent Exams".
-  -->
-
-  <entry id="passport" type="service">
-    <name>Passport Photo</name>
-    <fullName>Indian Passport Application Photo</fullName>
-    <category>Travel</category>
-    <logo>passport.svg</logo>
-    <color>#1d4ed8</color>
-    <bg>#e8efff</bg>
-    <date>Always available</date>
+<entry id="ssc-mts" type="exam">
+    <name>SSC MTS</name>
+    <fullName>Staff Selection Commission Multi Tasking Staff</fullName>
+    <category>Government</category>
+    <logo>ssc.svg</logo>
+    <color>#ef4444</color>
+    <bg>#fff0f0</bg>
     <documents>
-      <document id="photo" type="photo" required="true">
-        <label>Passport Photo</label>
-        <format>JPG</format>
-        <maxSizeKB>1024</maxSizeKB>
-        <dimensions>
-          <px width="600" height="600"/>
-          <physical width="2" height="2" unit="inch" dpi="300"/>
-        </dimensions>
-        <background>White background, square crop, face covering 70-80% of frame</background>
-      </document>
-    </documents>
-  </entry>
 
-  <entry id="pan" type="service">
-    <name>PAN Card</name>
-    <fullName>Permanent Account Number Photo</fullName>
-    <category>Government ID</category>
-    <logo>pan.svg</logo>
+        <document id="photo" type="photo" required="true">
+            <label>Photograph</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>20</minSizeKB>
+            <maxSizeKB>50</maxSizeKB>
+            <dimensions>
+                <px width="200" height="230"/>
+            </dimensions>
+            <background>Plain white background</background>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>10</minSizeKB>
+            <maxSizeKB>20</maxSizeKB>
+            <dimensions>
+                <px width="140" height="60"/>
+            </dimensions>
+        </document>
+
+    </documents>
+</entry>
+
+<entry id="ssc-gd" type="exam">
+    <name>SSC GD</name>
+    <fullName>SSC General Duty Constable</fullName>
+    <category>Government</category>
+    <logo>ssc.svg</logo>
+    <color>#ef4444</color>
+    <bg>#fff0f0</bg>
+
+    <documents>
+
+        <document id="photo" type="photo" required="true">
+            <label>Photograph</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>20</minSizeKB>
+            <maxSizeKB>50</maxSizeKB>
+            <dimensions>
+                <px width="200" height="230"/>
+            </dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>10</minSizeKB>
+            <maxSizeKB>20</maxSizeKB>
+            <dimensions>
+                <px width="140" height="60"/>
+            </dimensions>
+        </document>
+
+    </documents>
+</entry>
+
+<entry id="ssc-cpo" type="exam">
+    <name>SSC CPO</name>
+    <fullName>Sub Inspector in Delhi Police  CAPFs</fullName>
+    <category>Government</category>
+    <logo>ssc.svg</logo>
+    <color>#ef4444</color>
+    <bg>#fff0f0</bg>
+
+    <documents>
+
+        <document id="photo" type="photo" required="true">
+            <label>Photograph</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>20</minSizeKB>
+            <maxSizeKB>50</maxSizeKB>
+            <dimensions>
+                <px width="200" height="230"/>
+            </dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>10</minSizeKB>
+            <maxSizeKB>20</maxSizeKB>
+            <dimensions>
+                <px width="140" height="60"/>
+            </dimensions>
+        </document>
+
+    </documents>
+</entry>
+
+<entry id="ssc-je" type="exam">
+    <name>SSC JE</name>
+    <fullName>Junior Engineer</fullName>
+    <category>Government</category>
+    <logo>ssc.svg</logo>
+    <color>#ef4444</color>
+    <bg>#fff0f0</bg>
+
+    <documents>
+
+        <document id="photo" type="photo" required="true">
+            <label>Photograph</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>20</minSizeKB>
+            <maxSizeKB>50</maxSizeKB>
+            <dimensions>
+                <px width="200" height="230"/>
+            </dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>10</minSizeKB>
+            <maxSizeKB>20</maxSizeKB>
+            <dimensions>
+                <px width="140" height="60"/>
+            </dimensions>
+        </document>
+
+    </documents>
+</entry>
+
+<entry id="ssc-stenographer" type="exam">
+    <name>SSC Stenographer</name>
+    <fullName>SSC Stenographer Grade C  D</fullName>
+    <category>Government</category>
+    <logo>ssc.svg</logo>
+    <color>#ef4444</color>
+    <bg>#fff0f0</bg>
+
+    <documents>
+
+        <document id="photo" type="photo" required="true">
+            <label>Photograph</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>20</minSizeKB>
+            <maxSizeKB>50</maxSizeKB>
+            <dimensions>
+                <px width="200" height="230"/>
+            </dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>10</minSizeKB>
+            <maxSizeKB>20</maxSizeKB>
+            <dimensions>
+                <px width="140" height="60"/>
+            </dimensions>
+        </document>
+
+    </documents>
+</entry>
+
+<entry id="ssc-selection-post" type="exam">
+    <name>SSC Selection Post</name>
+    <fullName>SSC Selection Post Phase</fullName>
+    <category>Government</category>
+    <logo>ssc.svg</logo>
+    <color>#ef4444</color>
+    <bg>#fff0f0</bg>
+
+    <documents>
+
+        <document id="photo" type="photo" required="true">
+            <label>Photograph</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>20</minSizeKB>
+            <maxSizeKB>50</maxSizeKB>
+            <dimensions>
+                <px width="200" height="230"/>
+            </dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>10</minSizeKB>
+            <maxSizeKB>20</maxSizeKB>
+            <dimensions>
+                <px width="140" height="60"/>
+            </dimensions>
+        </document>
+
+    </documents>
+</entry>
+
+<entry id="ssc-chsl" type="exam">
+    <name>SSC CHSL</name>
+    <fullName>Staff Selection Commission Combined Higher Secondary Level</fullName>
+    <category>Government</category>
+    <logo>ssc.svg</logo>
+    <color>#ef4444</color>
+    <bg>#fff0f0</bg>
+    <documents>
+
+        <document id="photo" type="photo" required="true">
+            <label>Photograph</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>20</minSizeKB>
+            <maxSizeKB>50</maxSizeKB>
+            <dimensions>
+                <px width="200" height="230"/>
+            </dimensions>
+            <background>Light/plain background</background>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>10</minSizeKB>
+            <maxSizeKB>20</maxSizeKB>
+            <dimensions>
+                <px width="140" height="60"/>
+            </dimensions>
+            <background>White paper with black ink</background>
+        </document>
+
+    </documents>
+</entry>
+
+<entry id="ssc-mts" type="exam">
+    <name>SSC MTS</name>
+    <fullName>Staff Selection Commission Multi Tasking Staff</fullName>
+    <category>Government</category>
+    <logo>ssc.svg</logo>
+    <color>#ef4444</color>
+    <bg>#fff0f0</bg>
+    <documents>
+
+        <document id="photo" type="photo" required="true">
+            <label>Photograph</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>20</minSizeKB>
+            <maxSizeKB>50</maxSizeKB>
+            <dimensions>
+                <px width="200" height="230"/>
+            </dimensions>
+            <background>Plain white background</background>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>10</minSizeKB>
+            <maxSizeKB>20</maxSizeKB>
+            <dimensions>
+                <px width="140" height="60"/>
+            </dimensions>
+        </document>
+
+    </documents>
+</entry>
+
+<entry id="ssc-gd" type="exam">
+    <name>SSC GD</name>
+    <fullName>SSC General Duty Constable</fullName>
+    <category>Government</category>
+    <logo>ssc.svg</logo>
+    <color>#ef4444</color>
+    <bg>#fff0f0</bg>
+
+    <documents>
+
+        <document id="photo" type="photo" required="true">
+            <label>Photograph</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>20</minSizeKB>
+            <maxSizeKB>50</maxSizeKB>
+            <dimensions>
+                <px width="200" height="230"/>
+            </dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>10</minSizeKB>
+            <maxSizeKB>20</maxSizeKB>
+            <dimensions>
+                <px width="140" height="60"/>
+            </dimensions>
+        </document>
+
+    </documents>
+</entry>
+
+<entry id="ssc-cpo" type="exam">
+    <name>SSC CPO</name>
+    <fullName>Sub Inspector in Delhi Police  CAPFs</fullName>
+    <category>Government</category>
+    <logo>ssc.svg</logo>
+    <color>#ef4444</color>
+    <bg>#fff0f0</bg>
+
+    <documents>
+
+        <document id="photo" type="photo" required="true">
+            <label>Photograph</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>20</minSizeKB>
+            <maxSizeKB>50</maxSizeKB>
+            <dimensions>
+                <px width="200" height="230"/>
+            </dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>10</minSizeKB>
+            <maxSizeKB>20</maxSizeKB>
+            <dimensions>
+                <px width="140" height="60"/>
+            </dimensions>
+        </document>
+
+    </documents>
+</entry>
+
+<entry id="ssc-je" type="exam">
+    <name>SSC JE</name>
+    <fullName>Junior Engineer</fullName>
+    <category>Government</category>
+    <logo>ssc.svg</logo>
+    <color>#ef4444</color>
+    <bg>#fff0f0</bg>
+
+    <documents>
+
+        <document id="photo" type="photo" required="true">
+            <label>Photograph</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>20</minSizeKB>
+            <maxSizeKB>50</maxSizeKB>
+            <dimensions>
+                <px width="200" height="230"/>
+            </dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>10</minSizeKB>
+            <maxSizeKB>20</maxSizeKB>
+            <dimensions>
+                <px width="140" height="60"/>
+            </dimensions>
+        </document>
+
+    </documents>
+</entry>
+
+<entry id="ssc-stenographer" type="exam">
+    <name>SSC Stenographer</name>
+    <fullName>SSC Stenographer Grade C  D</fullName>
+    <category>Government</category>
+    <logo>ssc.svg</logo>
+    <color>#ef4444</color>
+    <bg>#fff0f0</bg>
+
+    <documents>
+
+        <document id="photo" type="photo" required="true">
+            <label>Photograph</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>20</minSizeKB>
+            <maxSizeKB>50</maxSizeKB>
+            <dimensions>
+                <px width="200" height="230"/>
+            </dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>10</minSizeKB>
+            <maxSizeKB>20</maxSizeKB>
+            <dimensions>
+                <px width="140" height="60"/>
+            </dimensions>
+        </document>
+
+    </documents>
+</entry>
+
+<entry id="ssc-selection-post" type="exam">
+    <name>SSC Selection Post</name>
+    <fullName>SSC Selection Post Phase</fullName>
+    <category>Government</category>
+    <logo>ssc.svg</logo>
+    <color>#ef4444</color>
+    <bg>#fff0f0</bg>
+
+    <documents>
+
+        <document id="photo" type="photo" required="true">
+            <label>Photograph</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>20</minSizeKB>
+            <maxSizeKB>50</maxSizeKB>
+            <dimensions>
+                <px width="200" height="230"/>
+            </dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>10</minSizeKB>
+            <maxSizeKB>20</maxSizeKB>
+            <dimensions>
+                <px width="140" height="60"/>
+            </dimensions>
+        </document>
+
+    </documents>
+</entry>
+
+<!-- ========================================================= -->
+<!-- BANKING EXAMS -->
+<!-- ========================================================= -->
+
+<entry id="ibps-po" type="exam">
+    <name>IBPS PO</name>
+    <fullName>Institute of Banking Personnel Selection - Probationary Officer</fullName>
+    <category>Banking</category>
+    <logo>ibps.svg</logo>
     <color>#0f766e</color>
-    <bg>#e3faf5</bg>
-    <date>Always available</date>
-    <documents>
-      <document id="photo" type="photo" required="true">
-        <label>Passport Photo</label>
-        <format>JPG</format>
-        <maxSizeKB>500</maxSizeKB>
-        <dimensions>
-          <px width="197" height="197"/>
-          <physical width="2.5" height="2.5" unit="cm" dpi="200"/>
-        </dimensions>
-        <background>White background</background>
-      </document>
-      <document id="signature" type="signature" required="true">
-        <label>Signature</label>
-        <format>JPG</format>
-        <maxSizeKB>200</maxSizeKB>
-        <dimensions>
-          <px width="255" height="85"/>
-        </dimensions>
-      </document>
-    </documents>
-  </entry>
+    <bg>#e7faf5</bg>
 
-  <entry id="visa" type="service">
-    <name>US Visa</name>
-    <fullName>US Visa Application Photo (DS-160)</fullName>
+    <documents>
+
+        <document id="photo" type="photo" required="true">
+            <label>Photograph</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>20</minSizeKB>
+            <maxSizeKB>50</maxSizeKB>
+            <dimensions>
+                <px width="200" height="230"/>
+            </dimensions>
+            <background>Light background</background>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>10</minSizeKB>
+            <maxSizeKB>20</maxSizeKB>
+            <dimensions>
+                <px width="140" height="60"/>
+            </dimensions>
+            <background>White paper using black ink</background>
+        </document>
+
+        <document id="thumb" type="signature" required="true">
+            <label>Left Thumb Impression</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>20</minSizeKB>
+            <maxSizeKB>50</maxSizeKB>
+            <dimensions>
+                <px width="240" height="240"/>
+            </dimensions>
+        </document>
+
+        <document id="declaration" type="document" required="true">
+            <label>Handwritten Declaration</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>50</minSizeKB>
+            <maxSizeKB>100</maxSizeKB>
+            <dimensions>
+                <px width="800" height="400"/>
+            </dimensions>
+            <notes>I, __________, hereby declare that all the information submitted by me in the application form is correct, true and valid.</notes>
+        </document>
+
+    </documents>
+</entry>
+
+<entry id="ibps-clerk" type="exam">
+    <name>IBPS Clerk</name>
+    <fullName>Institute of Banking Personnel Selection - Clerk</fullName>
+    <category>Banking</category>
+    <logo>ibps.svg</logo>
+    <color>#0f766e</color>
+    <bg>#e7faf5</bg>
+    <documents>
+        <sameAs>ibps-po</sameAs>
+    </documents>
+</entry>
+
+<entry id="ibps-so" type="exam">
+    <name>IBPS SO</name>
+    <fullName>Institute of Banking Personnel Selection - Specialist Officer</fullName>
+    <category>Banking</category>
+    <logo>ibps.svg</logo>
+    <color>#0f766e</color>
+    <bg>#e7faf5</bg>
+    <documents>
+        <sameAs>ibps-po</sameAs>
+    </documents>
+</entry>
+
+<entry id="sbi-po" type="exam">
+    <name>SBI PO</name>
+    <fullName>State Bank of India Probationary Officer</fullName>
+    <category>Banking</category>
+    <logo>sbi.svg</logo>
+    <color>#2563eb</color>
+    <bg>#eff6ff</bg>
+    <documents>
+        <sameAs>ibps-po</sameAs>
+    </documents>
+</entry>
+
+<entry id="sbi-clerk" type="exam">
+    <name>SBI Clerk</name>
+    <fullName>State Bank of India Junior Associate</fullName>
+    <category>Banking</category>
+    <logo>sbi.svg</logo>
+    <color>#2563eb</color>
+    <bg>#eff6ff</bg>
+    <documents>
+        <sameAs>ibps-po</sameAs>
+    </documents>
+</entry>
+
+<entry id="rbi-grade-b" type="exam">
+    <name>RBI Grade B</name>
+    <fullName>Reserve Bank of India Grade B Officer</fullName>
+    <category>Banking</category>
+    <logo>rbi.svg</logo>
+    <color>#166534</color>
+    <bg>#eefcf3</bg>
+    <documents>
+        <sameAs>ibps-po</sameAs>
+    </documents>
+</entry>
+
+<entry id="rbi-assistant" type="exam">
+    <name>RBI Assistant</name>
+    <fullName>Reserve Bank of India Assistant</fullName>
+    <category>Banking</category>
+    <logo>rbi.svg</logo>
+    <color>#166534</color>
+    <bg>#eefcf3</bg>
+    <documents>
+        <sameAs>ibps-po</sameAs>
+    </documents>
+</entry>
+
+<entry id="nabard-grade-a" type="exam">
+    <name>NABARD Grade A</name>
+    <fullName>National Bank for Agriculture and Rural Development Grade A</fullName>
+    <category>Banking</category>
+    <logo>nabard.svg</logo>
+    <color>#15803d</color>
+    <bg>#ecfdf3</bg>
+    <documents>
+        <sameAs>ibps-po</sameAs>
+    </documents>
+</entry>
+
+<entry id="lic-aao" type="exam">
+    <name>LIC AAO</name>
+    <fullName>Life Insurance Corporation Assistant Administrative Officer</fullName>
+    <category>Insurance</category>
+    <logo>lic.svg</logo>
+    <color>#f59e0b</color>
+    <bg>#fff8e8</bg>
+    <documents>
+        <sameAs>ibps-po</sameAs>
+    </documents>
+</entry>
+
+<entry id="lic-ado" type="exam">
+    <name>LIC ADO</name>
+    <fullName>Life Insurance Corporation Apprentice Development Officer</fullName>
+    <category>Insurance</category>
+    <logo>lic.svg</logo>
+    <color>#f59e0b</color>
+    <bg>#fff8e8</bg>
+    <documents>
+        <sameAs>ibps-po</sameAs>
+    </documents>
+</entry>
+
+<entry id="niacl-ao" type="exam">
+    <name>NIACL AO</name>
+    <fullName>New India Assurance Administrative Officer</fullName>
+    <category>Insurance</category>
+    <logo>niacl.svg</logo>
+    <color>#7c3aed</color>
+    <bg>#f5f3ff</bg>
+    <documents>
+        <sameAs>ibps-po</sameAs>
+    </documents>
+</entry>
+
+<entry id="ibps-clerk" type="exam">
+    <name>IBPS Clerk</name>
+    <fullName>Institute of Banking Personnel Selection - Customer Service Associate</fullName>
+    <category>Banking</category>
+    <logo>ibps.svg</logo>
+    <color>#0f766e</color>
+    <bg>#e7faf5</bg>
+
+    <documents>
+
+        <document id="photo" type="photo" required="true">
+            <label>Photograph</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>20</minSizeKB>
+            <maxSizeKB>50</maxSizeKB>
+            <dimensions>
+                <px width="200" height="230"/>
+            </dimensions>
+            <background>Light background</background>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>10</minSizeKB>
+            <maxSizeKB>20</maxSizeKB>
+            <dimensions>
+                <px width="140" height="60"/>
+            </dimensions>
+            <background>White paper with black ink</background>
+        </document>
+
+        <document id="thumb" type="signature" required="true">
+            <label>Left Thumb Impression</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>20</minSizeKB>
+            <maxSizeKB>50</maxSizeKB>
+            <dimensions>
+                <px width="240" height="240"/>
+            </dimensions>
+        </document>
+
+        <document id="declaration" type="document" required="true">
+            <label>Handwritten Declaration</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>50</minSizeKB>
+            <maxSizeKB>100</maxSizeKB>
+            <dimensions>
+                <px width="800" height="400"/>
+            </dimensions>
+        </document>
+
+    </documents>
+</entry>
+
+<entry id="ibps-so" type="exam">
+    <name>IBPS SO</name>
+    <fullName>Institute of Banking Personnel Selection - Specialist Officer</fullName>
+    <category>Banking</category>
+    <logo>ibps.svg</logo>
+    <color>#0f766e</color>
+    <bg>#e7faf5</bg>
+
+    <documents>
+
+        <document id="photo" type="photo" required="true">
+            <label>Photograph</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>20</minSizeKB>
+            <maxSizeKB>50</maxSizeKB>
+            <dimensions>
+                <px width="200" height="230"/>
+            </dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>10</minSizeKB>
+            <maxSizeKB>20</maxSizeKB>
+            <dimensions>
+                <px width="140" height="60"/>
+            </dimensions>
+        </document>
+
+        <document id="thumb" type="signature" required="true">
+            <label>Left Thumb Impression</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>20</minSizeKB>
+            <maxSizeKB>50</maxSizeKB>
+            <dimensions>
+                <px width="240" height="240"/>
+            </dimensions>
+        </document>
+
+        <document id="declaration" type="document" required="true">
+            <label>Handwritten Declaration</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>50</minSizeKB>
+            <maxSizeKB>100</maxSizeKB>
+            <dimensions>
+                <px width="800" height="400"/>
+            </dimensions>
+        </document>
+
+    </documents>
+</entry>
+
+<entry id="sbi-po" type="exam">
+    <name>SBI PO</name>
+    <fullName>State Bank of India Probationary Officer</fullName>
+    <category>Banking</category>
+    <logo>sbi.svg</logo>
+    <color>#2563eb</color>
+    <bg>#eff6ff</bg>
+
+    <documents>
+
+        <document id="photo" type="photo" required="true">
+            <label>Photograph</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>20</minSizeKB>
+            <maxSizeKB>50</maxSizeKB>
+            <dimensions>
+                <px width="200" height="230"/>
+            </dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>10</minSizeKB>
+            <maxSizeKB>20</maxSizeKB>
+            <dimensions>
+                <px width="140" height="60"/>
+            </dimensions>
+        </document>
+
+        <document id="thumb" type="signature" required="true">
+            <label>Left Thumb Impression</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>20</minSizeKB>
+            <maxSizeKB>50</maxSizeKB>
+            <dimensions>
+                <px width="240" height="240"/>
+            </dimensions>
+        </document>
+
+        <document id="declaration" type="document" required="true">
+            <label>Handwritten Declaration</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>50</minSizeKB>
+            <maxSizeKB>100</maxSizeKB>
+            <dimensions>
+                <px width="800" height="400"/>
+            </dimensions>
+        </document>
+
+    </documents>
+</entry>
+
+<entry id="sbi-clerk" type="exam">
+    <name>SBI Clerk</name>
+    <fullName>State Bank of India Junior Associate</fullName>
+    <category>Banking</category>
+    <logo>sbi.svg</logo>
+    <color>#2563eb</color>
+    <bg>#eff6ff</bg>
+
+    <documents>
+
+        <document id="photo" type="photo" required="true">
+            <label>Photograph</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>20</minSizeKB>
+            <maxSizeKB>50</maxSizeKB>
+            <dimensions>
+                <px width="200" height="230"/>
+            </dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>10</minSizeKB>
+            <maxSizeKB>20</maxSizeKB>
+            <dimensions>
+                <px width="140" height="60"/>
+            </dimensions>
+        </document>
+
+        <document id="thumb" type="signature" required="true">
+            <label>Left Thumb Impression</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>20</minSizeKB>
+            <maxSizeKB>50</maxSizeKB>
+            <dimensions>
+                <px width="240" height="240"/>
+            </dimensions>
+        </document>
+
+        <document id="declaration" type="document" required="true">
+            <label>Handwritten Declaration</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>50</minSizeKB>
+            <maxSizeKB>100</maxSizeKB>
+            <dimensions>
+                <px width="800" height="400"/>
+            </dimensions>
+        </document>
+
+    </documents>
+</entry>
+
+<entry id="rbi-grade-b" type="exam">
+    <name>RBI Grade B</name>
+    <fullName>Reserve Bank of India Grade B Officer</fullName>
+    <category>Banking</category>
+    <logo>rbi.svg</logo>
+    <color>#166534</color>
+    <bg>#eefcf3</bg>
+
+    <documents>
+
+        <document id="photo" type="photo" required="true">
+            <label>Photograph</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>20</minSizeKB>
+            <maxSizeKB>50</maxSizeKB>
+            <dimensions>
+                <px width="200" height="230"/>
+            </dimensions>
+            <background>Light background</background>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>10</minSizeKB>
+            <maxSizeKB>20</maxSizeKB>
+            <dimensions>
+                <px width="140" height="60"/>
+            </dimensions>
+            <background>White paper using black ink</background>
+        </document>
+
+        <document id="thumb" type="signature" required="true">
+            <label>Left Thumb Impression</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>20</minSizeKB>
+            <maxSizeKB>50</maxSizeKB>
+            <dimensions>
+                <px width="240" height="240"/>
+            </dimensions>
+        </document>
+
+        <document id="declaration" type="document" required="true">
+            <label>Handwritten Declaration</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>50</minSizeKB>
+            <maxSizeKB>100</maxSizeKB>
+            <dimensions>
+                <px width="800" height="400"/>
+            </dimensions>
+        </document>
+
+    </documents>
+</entry>
+
+<entry id="rbi-assistant" type="exam">
+    <name>RBI Assistant</name>
+    <fullName>Reserve Bank of India Assistant</fullName>
+    <category>Banking</category>
+    <logo>rbi.svg</logo>
+    <color>#166534</color>
+    <bg>#eefcf3</bg>
+
+    <documents>
+
+        <document id="photo" type="photo" required="true">
+            <label>Photograph</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>20</minSizeKB>
+            <maxSizeKB>50</maxSizeKB>
+            <dimensions>
+                <px width="200" height="230"/>
+            </dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>10</minSizeKB>
+            <maxSizeKB>20</maxSizeKB>
+            <dimensions>
+                <px width="140" height="60"/>
+            </dimensions>
+        </document>
+
+        <document id="thumb" type="signature" required="true">
+            <label>Left Thumb Impression</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>20</minSizeKB>
+            <maxSizeKB>50</maxSizeKB>
+            <dimensions>
+                <px width="240" height="240"/>
+            </dimensions>
+        </document>
+
+        <document id="declaration" type="document" required="true">
+            <label>Handwritten Declaration</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>50</minSizeKB>
+            <maxSizeKB>100</maxSizeKB>
+            <dimensions>
+                <px width="800" height="400"/>
+            </dimensions>
+        </document>
+
+    </documents>
+</entry>
+
+<entry id="nabard-grade-a" type="exam">
+    <name>NABARD Grade A</name>
+    <fullName>National Bank for Agriculture and Rural Development Grade A</fullName>
+    <category>Banking</category>
+    <logo>nabard.svg</logo>
+    <color>#15803d</color>
+    <bg>#ecfdf3</bg>
+
+    <documents>
+
+        <document id="photo" type="photo" required="true">
+            <label>Photograph</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>20</minSizeKB>
+            <maxSizeKB>50</maxSizeKB>
+            <dimensions>
+                <px width="200" height="230"/>
+            </dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>10</minSizeKB>
+            <maxSizeKB>20</maxSizeKB>
+            <dimensions>
+                <px width="140" height="60"/>
+            </dimensions>
+        </document>
+
+        <document id="thumb" type="signature" required="true">
+            <label>Left Thumb Impression</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>20</minSizeKB>
+            <maxSizeKB>50</maxSizeKB>
+            <dimensions>
+                <px width="240" height="240"/>
+            </dimensions>
+        </document>
+
+        <document id="declaration" type="document" required="true">
+            <label>Handwritten Declaration</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>50</minSizeKB>
+            <maxSizeKB>100</maxSizeKB>
+            <dimensions>
+                <px width="800" height="400"/>
+            </dimensions>
+        </document>
+
+    </documents>
+</entry>
+
+<entry id="lic-aao" type="exam">
+    <name>LIC AAO</name>
+    <fullName>Life Insurance Corporation Assistant Administrative Officer</fullName>
+    <category>Insurance</category>
+    <logo>lic.svg</logo>
+    <color>#f59e0b</color>
+    <bg>#fff8e8</bg>
+
+    <documents>
+
+        <document id="photo" type="photo" required="true">
+            <label>Photograph</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>20</minSizeKB>
+            <maxSizeKB>50</maxSizeKB>
+            <dimensions>
+                <px width="200" height="230"/>
+            </dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>10</minSizeKB>
+            <maxSizeKB>20</maxSizeKB>
+            <dimensions>
+                <px width="140" height="60"/>
+            </dimensions>
+        </document>
+
+        <document id="thumb" type="signature" required="true">
+            <label>Left Thumb Impression</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>20</minSizeKB>
+            <maxSizeKB>50</maxSizeKB>
+            <dimensions>
+                <px width="240" height="240"/>
+            </dimensions>
+        </document>
+
+        <document id="declaration" type="document" required="true">
+            <label>Handwritten Declaration</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>50</minSizeKB>
+            <maxSizeKB>100</maxSizeKB>
+            <dimensions>
+                <px width="800" height="400"/>
+            </dimensions>
+        </document>
+
+    </documents>
+</entry>
+
+<entry id="lic-ado" type="exam">
+    <name>LIC ADO</name>
+    <fullName>Life Insurance Corporation Apprentice Development Officer</fullName>
+    <category>Insurance</category>
+    <logo>lic.svg</logo>
+    <color>#f59e0b</color>
+    <bg>#fff8e8</bg>
+
+    <documents>
+
+        <document id="photo" type="photo" required="true">
+            <label>Photograph</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>20</minSizeKB>
+            <maxSizeKB>50</maxSizeKB>
+            <dimensions>
+                <px width="200" height="230"/>
+            </dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>10</minSizeKB>
+            <maxSizeKB>20</maxSizeKB>
+            <dimensions>
+                <px width="140" height="60"/>
+            </dimensions>
+        </document>
+
+        <document id="thumb" type="signature" required="true">
+            <label>Left Thumb Impression</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>20</minSizeKB>
+            <maxSizeKB>50</maxSizeKB>
+            <dimensions>
+                <px width="240" height="240"/>
+            </dimensions>
+        </document>
+
+        <document id="declaration" type="document" required="true">
+            <label>Handwritten Declaration</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>50</minSizeKB>
+            <maxSizeKB>100</maxSizeKB>
+            <dimensions>
+                <px width="800" height="400"/>
+            </dimensions>
+        </document>
+
+    </documents>
+</entry>
+
+<entry id="niacl-ao" type="exam">
+    <name>NIACL AO</name>
+    <fullName>New India Assurance Administrative Officer</fullName>
+    <category>Insurance</category>
+    <logo>niacl.svg</logo>
+    <color>#7c3aed</color>
+    <bg>#f3e8ff</bg>
+
+    <documents>
+
+        <document id="photo" type="photo" required="true">
+            <label>Photograph</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>20</minSizeKB>
+            <maxSizeKB>50</maxSizeKB>
+            <dimensions>
+                <px width="200" height="230"/>
+            </dimensions>
+            <background>Light background</background>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>10</minSizeKB>
+            <maxSizeKB>20</maxSizeKB>
+            <dimensions>
+                <px width="140" height="60"/>
+            </dimensions>
+        </document>
+
+        <document id="thumb" type="signature" required="true">
+            <label>Left Thumb Impression</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>20</minSizeKB>
+            <maxSizeKB>50</maxSizeKB>
+            <dimensions>
+                <px width="240" height="240"/>
+            </dimensions>
+        </document>
+
+        <document id="declaration" type="document" required="true">
+            <label>Handwritten Declaration</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>50</minSizeKB>
+            <maxSizeKB>100</maxSizeKB>
+            <dimensions>
+                <px width="800" height="400"/>
+            </dimensions>
+        </document>
+
+    </documents>
+</entry>
+
+<!-- ========================================================= -->
+<!-- UPSC EXAMS -->
+<!-- ========================================================= -->
+
+<entry id="upsc-cds" type="exam">
+    <name>CDS</name>
+    <fullName>Combined Defence Services Examination</fullName>
+    <category>Defence</category>
+    <logo>upsc.svg</logo>
+    <color>#8b5cf6</color>
+    <bg>#f5f3ff</bg>
+
+    <documents>
+
+        <document id="photo" type="photo" required="true">
+            <label>Passport Photograph</label>
+            <format>JPG,JPEG</format>
+            <maxSizeKB>300</maxSizeKB>
+            <dimensions>
+                <px width="350" height="450"/>
+            </dimensions>
+            <background>White background</background>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <maxSizeKB>100</maxSizeKB>
+            <dimensions>
+                <px width="236" height="709"/>
+            </dimensions>
+        </document>
+
+    </documents>
+</entry>
+
+<entry id="upsc-nda" type="exam">
+    <name>NDA</name>
+    <fullName>National Defence Academy Examination</fullName>
+    <category>Defence</category>
+    <logo>upsc.svg</logo>
+    <color>#8b5cf6</color>
+    <bg>#f5f3ff</bg>
+
+    <documents>
+
+        <document id="photo" type="photo" required="true">
+            <label>Passport Photograph</label>
+            <format>JPG,JPEG</format>
+            <maxSizeKB>300</maxSizeKB>
+            <dimensions>
+                <px width="350" height="450"/>
+            </dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <maxSizeKB>100</maxSizeKB>
+            <dimensions>
+                <px width="236" height="709"/>
+            </dimensions>
+        </document>
+
+    </documents>
+</entry>
+
+<entry id="upsc-capf" type="exam">
+    <name>CAPF</name>
+    <fullName>Central Armed Police Forces</fullName>
+    <category>Government</category>
+    <logo>upsc.svg</logo>
+    <color>#8b5cf6</color>
+    <bg>#f5f3ff</bg>
+
+    <documents>
+
+        <document id="photo" type="photo" required="true">
+            <label>Passport Photograph</label>
+            <format>JPG,JPEG</format>
+            <maxSizeKB>300</maxSizeKB>
+            <dimensions>
+                <px width="350" height="450"/>
+            </dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <maxSizeKB>100</maxSizeKB>
+            <dimensions>
+                <px width="236" height="709"/>
+            </dimensions>
+        </document>
+
+    </documents>
+</entry>
+
+<entry id="upsc-epfo" type="exam">
+    <name>EPFO EO/AO</name>
+    <fullName>Employees' Provident Fund Organisation EO/AO</fullName>
+    <category>Government</category>
+    <logo>epfo.svg</logo>
+    <color>#0f766e</color>
+    <bg>#ecfdf5</bg>
+
+    <documents>
+
+        <document id="photo" type="photo" required="true">
+            <label>Passport Photograph</label>
+            <format>JPG,JPEG</format>
+            <maxSizeKB>300</maxSizeKB>
+            <dimensions>
+                <px width="350" height="450"/>
+            </dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <maxSizeKB>100</maxSizeKB>
+            <dimensions>
+                <px width="236" height="709"/>
+            </dimensions>
+        </document>
+
+    </documents>
+</entry>
+
+<entry id="upsc-ese" type="exam">
+    <name>ESE</name>
+    <fullName>Engineering Services Examination</fullName>
+    <category>Engineering</category>
+    <logo>upsc.svg</logo>
+    <color>#8b5cf6</color>
+    <bg>#f5f3ff</bg>
+
+    <documents>
+
+        <document id="photo" type="photo" required="true">
+            <label>Passport Photograph</label>
+            <format>JPG,JPEG</format>
+            <maxSizeKB>300</maxSizeKB>
+            <dimensions>
+                <px width="350" height="450"/>
+            </dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <maxSizeKB>100</maxSizeKB>
+            <dimensions>
+                <px width="236" height="709"/>
+            </dimensions>
+        </document>
+
+    </documents>
+</entry>
+
+<entry id="upsc-cms" type="exam">
+    <name>CMS</name>
+    <fullName>Combined Medical Services Examination</fullName>
+    <category>Medical</category>
+    <logo>upsc.svg</logo>
+    <color>#8b5cf6</color>
+    <bg>#f5f3ff</bg>
+
+    <documents>
+
+        <document id="photo" type="photo" required="true">
+            <label>Passport Photograph</label>
+            <format>JPG,JPEG</format>
+            <maxSizeKB>300</maxSizeKB>
+            <dimensions>
+                <px width="350" height="450"/>
+            </dimensions>
+            <background>White background</background>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <maxSizeKB>100</maxSizeKB>
+            <dimensions>
+                <px width="236" height="709"/>
+            </dimensions>
+        </document>
+
+    </documents>
+</entry>
+
+<!-- ========================================================= -->
+<!-- DEFENCE EXAMS -->
+<!-- ========================================================= -->
+
+<entry id="afcat" type="exam">
+    <name>AFCAT</name>
+    <fullName>Air Force Common Admission Test</fullName>
+    <category>Defence</category>
+    <logo>afcat.svg</logo>
+    <color>#2563eb</color>
+    <bg>#eff6ff</bg>
+
+    <documents>
+
+        <document id="photo" type="photo" required="true">
+            <label>Passport Photograph</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>10</minSizeKB>
+            <maxSizeKB>50</maxSizeKB>
+            <dimensions>
+                <px width="350" height="450"/>
+            </dimensions>
+            <background>Light background</background>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>10</minSizeKB>
+            <maxSizeKB>50</maxSizeKB>
+            <dimensions>
+                <px width="350" height="150"/>
+            </dimensions>
+        </document>
+
+    </documents>
+</entry>
+
+<entry id="agniveer-army" type="exam">
+    <name>Agniveer Army</name>
+    <fullName>Indian Army Agniveer Recruitment</fullName>
+    <category>Defence</category>
+    <logo>army.svg</logo>
+    <color>#166534</color>
+    <bg>#ecfdf5</bg>
+
+    <documents>
+
+        <document id="photo" type="photo" required="true">
+            <label>Recent Photograph</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>20</minSizeKB>
+            <maxSizeKB>100</maxSizeKB>
+            <dimensions>
+                <px width="350" height="450"/>
+            </dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>10</minSizeKB>
+            <maxSizeKB>50</maxSizeKB>
+            <dimensions>
+                <px width="350" height="150"/>
+            </dimensions>
+        </document>
+
+    </documents>
+</entry>
+
+<entry id="agniveer-navy" type="exam">
+    <name>Agniveer Navy</name>
+    <fullName>Indian Navy Agniveer Recruitment</fullName>
+    <category>Defence</category>
+    <logo>navy.svg</logo>
+    <color>#0f766e</color>
+    <bg>#ecfeff</bg>
+
+    <documents>
+
+        <document id="photo" type="photo" required="true">
+            <label>Recent Photograph</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>20</minSizeKB>
+            <maxSizeKB>100</maxSizeKB>
+            <dimensions>
+                <px width="350" height="450"/>
+            </dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>10</minSizeKB>
+            <maxSizeKB>50</maxSizeKB>
+            <dimensions>
+                <px width="350" height="150"/>
+            </dimensions>
+        </document>
+
+    </documents>
+</entry>
+
+<entry id="agniveer-airforce" type="exam">
+    <name>Agniveer Air Force</name>
+    <fullName>Indian Air Force Agniveer Vayu</fullName>
+    <category>Defence</category>
+    <logo>airforce.svg</logo>
+    <color>#1d4ed8</color>
+    <bg>#eff6ff</bg>
+
+    <documents>
+
+        <document id="photo" type="photo" required="true">
+            <label>Recent Photograph</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>20</minSizeKB>
+            <maxSizeKB>100</maxSizeKB>
+            <dimensions>
+                <px width="350" height="450"/>
+            </dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>10</minSizeKB>
+            <maxSizeKB>50</maxSizeKB>
+            <dimensions>
+                <px width="350" height="150"/>
+            </dimensions>
+        </document>
+
+    </documents>
+</entry>
+
+<entry id="coastguard-navik" type="exam">
+    <name>Coast Guard Navik</name>
+    <fullName>Indian Coast Guard Navik</fullName>
+    <category>Defence</category>
+    <logo>coastguard.svg</logo>
+    <color>#0f766e</color>
+    <bg>#ecfeff</bg>
+
+    <documents>
+
+        <document id="photo" type="photo" required="true">
+            <label>Photograph</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>20</minSizeKB>
+            <maxSizeKB>100</maxSizeKB>
+            <dimensions>
+                <px width="350" height="450"/>
+            </dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>10</minSizeKB>
+            <maxSizeKB>50</maxSizeKB>
+            <dimensions>
+                <px width="350" height="150"/>
+            </dimensions>
+        </document>
+
+    </documents>
+</entry>
+
+<entry id="coastguard-yantrik" type="exam">
+    <name>Coast Guard Yantrik</name>
+    <fullName>Indian Coast Guard Yantrik</fullName>
+    <category>Defence</category>
+    <logo>coastguard.svg</logo>
+    <color>#0f766e</color>
+    <bg>#ecfeff</bg>
+
+    <documents>
+
+        <document id="photo" type="photo" required="true">
+            <label>Photograph</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>20</minSizeKB>
+            <maxSizeKB>100</maxSizeKB>
+            <dimensions>
+                <px width="350" height="450"/>
+            </dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>10</minSizeKB>
+            <maxSizeKB>50</maxSizeKB>
+            <dimensions>
+                <px width="350" height="150"/>
+            </dimensions>
+        </document>
+
+    </documents>
+</entry>
+
+<!-- ========================================================= -->
+<!-- POLICE / PARAMILITARY RECRUITMENT -->
+<!-- ========================================================= -->
+
+<entry id="delhi-police-constable" type="exam">
+    <name>Delhi Police Constable</name>
+    <fullName>Delhi Police Constable Recruitment</fullName>
+    <category>Police</category>
+    <logo>delhi-police.svg</logo>
+    <color>#1d4ed8</color>
+    <bg>#eff6ff</bg>
+
+    <documents>
+
+        <document id="photo" type="photo" required="true">
+            <label>Recent Passport Photograph</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>20</minSizeKB>
+            <maxSizeKB>50</maxSizeKB>
+            <dimensions>
+                <px width="200" height="230"/>
+            </dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>10</minSizeKB>
+            <maxSizeKB>20</maxSizeKB>
+            <dimensions>
+                <px width="140" height="60"/>
+            </dimensions>
+        </document>
+
+    </documents>
+</entry>
+
+<entry id="crpf-constable" type="exam">
+    <name>CRPF Constable</name>
+    <fullName>Central Reserve Police Force Recruitment</fullName>
+    <category>Paramilitary</category>
+    <logo>crpf.svg</logo>
+    <color>#dc2626</color>
+    <bg>#fef2f2</bg>
+
+    <documents>
+
+        <document id="photo" type="photo" required="true">
+            <label>Passport Photograph</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>20</minSizeKB>
+            <maxSizeKB>50</maxSizeKB>
+            <dimensions>
+                <px width="200" height="230"/>
+            </dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>10</minSizeKB>
+            <maxSizeKB>20</maxSizeKB>
+            <dimensions>
+                <px width="140" height="60"/>
+            </dimensions>
+        </document>
+
+    </documents>
+</entry>
+
+<entry id="bsf-constable" type="exam">
+    <name>BSF Constable</name>
+    <fullName>Border Security Force Recruitment</fullName>
+    <category>Paramilitary</category>
+    <logo>bsf.svg</logo>
+    <color>#166534</color>
+    <bg>#ecfdf5</bg>
+
+    <documents>
+
+        <document id="photo" type="photo" required="true">
+            <label>Passport Photograph</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>20</minSizeKB>
+            <maxSizeKB>50</maxSizeKB>
+            <dimensions>
+                <px width="200" height="230"/>
+            </dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>10</minSizeKB>
+            <maxSizeKB>20</maxSizeKB>
+            <dimensions>
+                <px width="140" height="60"/>
+            </dimensions>
+        </document>
+
+    </documents>
+</entry>
+
+<entry id="cisf-constable" type="exam">
+    <name>CISF Constable</name>
+    <fullName>Central Industrial Security Force Recruitment</fullName>
+    <category>Paramilitary</category>
+    <logo>cisf.svg</logo>
+    <color>#0f766e</color>
+    <bg>#ecfeff</bg>
+
+    <documents>
+
+        <document id="photo" type="photo" required="true">
+            <label>Passport Photograph</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>20</minSizeKB>
+            <maxSizeKB>50</maxSizeKB>
+            <dimensions>
+                <px width="200" height="230"/>
+            </dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>10</minSizeKB>
+            <maxSizeKB>20</maxSizeKB>
+            <dimensions>
+                <px width="140" height="60"/>
+            </dimensions>
+        </document>
+
+    </documents>
+</entry>
+
+<entry id="itbp-constable" type="exam">
+    <name>ITBP Constable</name>
+    <fullName>Indo-Tibetan Border Police Recruitment</fullName>
+    <category>Paramilitary</category>
+    <logo>itbp.svg</logo>
+    <color>#1e3a8a</color>
+    <bg>#dbeafe</bg>
+
+    <documents>
+
+        <document id="photo" type="photo" required="true">
+            <label>Passport Photograph</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>20</minSizeKB>
+            <maxSizeKB>50</maxSizeKB>
+            <dimensions>
+                <px width="200" height="230"/>
+            </dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>10</minSizeKB>
+            <maxSizeKB>20</maxSizeKB>
+            <dimensions>
+                <px width="140" height="60"/>
+            </dimensions>
+        </document>
+
+    </documents>
+</entry>
+
+<!-- ========================================================= -->
+<!-- STATE PSC -->
+<!-- ========================================================= -->
+
+<entry id="bpsc" type="exam">
+    <name>BPSC</name>
+    <fullName>Bihar Public Service Commission</fullName>
+    <category>PSC</category>
+    <logo>bpsc.svg</logo>
+    <color>#7c2d12</color>
+    <bg>#fff7ed</bg>
+
+    <documents>
+        <document id="photo" type="photo" required="true">
+            <label>Photograph</label>
+            <format>JPG,JPEG</format>
+            <maxSizeKB>100</maxSizeKB>
+            <dimensions><px width="350" height="450"/></dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <maxSizeKB>50</maxSizeKB>
+            <dimensions><px width="350" height="120"/></dimensions>
+        </document>
+    </documents>
+</entry>
+
+<entry id="uppsc" type="exam">
+    <name>UPPSC</name>
+    <fullName>Uttar Pradesh Public Service Commission</fullName>
+    <category>PSC</category>
+    <logo>uppsc.svg</logo>
+    <color>#b91c1c</color>
+    <bg>#fef2f2</bg>
+
+    <documents>
+        <document id="photo" type="photo" required="true">
+            <label>Photograph</label>
+            <format>JPG,JPEG</format>
+            <maxSizeKB>100</maxSizeKB>
+            <dimensions><px width="350" height="450"/></dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <maxSizeKB>50</maxSizeKB>
+            <dimensions><px width="350" height="120"/></dimensions>
+        </document>
+    </documents>
+</entry>
+
+<entry id="mppsc" type="exam">
+    <name>MPPSC</name>
+    <fullName>Madhya Pradesh Public Service Commission</fullName>
+    <category>PSC</category>
+    <logo>mppsc.svg</logo>
+    <color>#15803d</color>
+    <bg>#ecfdf5</bg>
+
+    <documents>
+        <document id="photo" type="photo" required="true">
+            <label>Photograph</label>
+            <format>JPG,JPEG</format>
+            <maxSizeKB>100</maxSizeKB>
+            <dimensions><px width="350" height="450"/></dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <maxSizeKB>50</maxSizeKB>
+            <dimensions><px width="350" height="120"/></dimensions>
+        </document>
+    </documents>
+</entry>
+
+<entry id="rpsc" type="exam">
+    <name>RPSC</name>
+    <fullName>Rajasthan Public Service Commission</fullName>
+    <category>PSC</category>
+    <logo>rpsc.svg</logo>
+    <color>#ea580c</color>
+    <bg>#fff7ed</bg>
+
+    <documents>
+        <document id="photo" type="photo" required="true">
+            <label>Photograph</label>
+            <format>JPG,JPEG</format>
+            <maxSizeKB>100</maxSizeKB>
+            <dimensions><px width="350" height="450"/></dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <maxSizeKB>50</maxSizeKB>
+            <dimensions><px width="350" height="120"/></dimensions>
+        </document>
+    </documents>
+</entry>
+
+<!-- ========================================================= -->
+<!-- REMAINING STATE PSC -->
+<!-- ========================================================= -->
+
+<entry id="mpsc" type="exam">
+    <name>MPSC</name>
+    <fullName>Maharashtra Public Service Commission</fullName>
+    <category>PSC</category>
+    <logo>mpsc.svg</logo>
+    <color>#2563eb</color>
+    <bg>#eff6ff</bg>
+
+    <documents>
+        <document id="photo" type="photo" required="true">
+            <label>Photograph</label>
+            <format>JPG,JPEG</format>
+            <maxSizeKB>100</maxSizeKB>
+            <dimensions><px width="350" height="450"/></dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <maxSizeKB>50</maxSizeKB>
+            <dimensions><px width="350" height="120"/></dimensions>
+        </document>
+    </documents>
+</entry>
+
+<entry id="appsc" type="exam">
+    <name>APPSC</name>
+    <fullName>Andhra Pradesh Public Service Commission</fullName>
+    <category>PSC</category>
+    <logo>appsc.svg</logo>
+    <color>#0284c7</color>
+    <bg>#f0f9ff</bg>
+
+    <documents>
+        <document id="photo" type="photo" required="true">
+            <label>Photograph</label>
+            <format>JPG,JPEG</format>
+            <maxSizeKB>100</maxSizeKB>
+            <dimensions><px width="350" height="450"/></dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <maxSizeKB>50</maxSizeKB>
+            <dimensions><px width="350" height="120"/></dimensions>
+        </document>
+    </documents>
+</entry>
+
+<entry id="tspsc" type="exam">
+    <name>TSPSC</name>
+    <fullName>Telangana Public Service Commission</fullName>
+    <category>PSC</category>
+    <logo>tspsc.svg</logo>
+    <color>#9333ea</color>
+    <bg>#faf5ff</bg>
+
+    <documents>
+        <document id="photo" type="photo" required="true">
+            <label>Photograph</label>
+            <format>JPG,JPEG</format>
+            <maxSizeKB>100</maxSizeKB>
+            <dimensions><px width="350" height="450"/></dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <maxSizeKB>50</maxSizeKB>
+            <dimensions><px width="350" height="120"/></dimensions>
+        </document>
+    </documents>
+</entry>
+
+<entry id="kpsc" type="exam">
+    <name>KPSC</name>
+    <fullName>Karnataka Public Service Commission</fullName>
+    <category>PSC</category>
+    <logo>kpsc.svg</logo>
+    <color>#16a34a</color>
+    <bg>#f0fdf4</bg>
+
+    <documents>
+        <document id="photo" type="photo" required="true">
+            <label>Photograph</label>
+            <format>JPG,JPEG</format>
+            <maxSizeKB>100</maxSizeKB>
+            <dimensions><px width="350" height="450"/></dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <maxSizeKB>50</maxSizeKB>
+            <dimensions><px width="350" height="120"/></dimensions>
+        </document>
+    </documents>
+</entry>
+
+<entry id="tnpsc" type="exam">
+    <name>TNPSC</name>
+    <fullName>Tamil Nadu Public Service Commission</fullName>
+    <category>PSC</category>
+    <logo>tnpsc.svg</logo>
+    <color>#dc2626</color>
+    <bg>#fef2f2</bg>
+
+    <documents>
+        <document id="photo" type="photo" required="true">
+            <label>Photograph</label>
+            <format>JPG,JPEG</format>
+            <maxSizeKB>100</maxSizeKB>
+            <dimensions><px width="350" height="450"/></dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <maxSizeKB>50</maxSizeKB>
+            <dimensions><px width="350" height="120"/></dimensions>
+        </document>
+    </documents>
+</entry>
+
+<entry id="opsc" type="exam">
+    <name>OPSC</name>
+    <fullName>Odisha Public Service Commission</fullName>
+    <category>PSC</category>
+    <logo>opsc.svg</logo>
+    <color>#0891b2</color>
+    <bg>#ecfeff</bg>
+
+    <documents>
+        <document id="photo" type="photo" required="true">
+            <label>Photograph</label>
+            <format>JPG,JPEG</format>
+            <maxSizeKB>100</maxSizeKB>
+            <dimensions><px width="350" height="450"/></dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <maxSizeKB>50</maxSizeKB>
+            <dimensions><px width="350" height="120"/></dimensions>
+        </document>
+    </documents>
+</entry>
+
+<entry id="gpsc" type="exam">
+    <name>GPSC</name>
+    <fullName>Gujarat Public Service Commission</fullName>
+    <category>PSC</category>
+    <logo>gpsc.svg</logo>
+    <color>#f97316</color>
+    <bg>#fff7ed</bg>
+
+    <documents>
+        <document id="photo" type="photo" required="true">
+            <label>Photograph</label>
+            <format>JPG,JPEG</format>
+            <maxSizeKB>100</maxSizeKB>
+            <dimensions><px width="350" height="450"/></dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <maxSizeKB>50</maxSizeKB>
+            <dimensions><px width="350" height="120"/></dimensions>
+        </document>
+    </documents>
+</entry>
+
+<entry id="jpsc" type="exam">
+    <name>JPSC</name>
+    <fullName>Jharkhand Public Service Commission</fullName>
+    <category>PSC</category>
+    <logo>jpsc.svg</logo>
+    <color>#ca8a04</color>
+    <bg>#fefce8</bg>
+
+    <documents>
+        <document id="photo" type="photo" required="true">
+            <label>Photograph</label>
+            <format>JPG,JPEG</format>
+            <maxSizeKB>100</maxSizeKB>
+            <dimensions><px width="350" height="450"/></dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <maxSizeKB>50</maxSizeKB>
+            <dimensions><px width="350" height="120"/></dimensions>
+        </document>
+    </documents>
+</entry>
+
+<entry id="ppsc" type="exam">
+    <name>PPSC</name>
+    <fullName>Punjab Public Service Commission</fullName>
+    <category>PSC</category>
+    <logo>ppsc.svg</logo>
+    <color>#15803d</color>
+    <bg>#f0fdf4</bg>
+
+    <documents>
+        <document id="photo" type="photo" required="true">
+            <label>Photograph</label>
+            <format>JPG,JPEG</format>
+            <maxSizeKB>100</maxSizeKB>
+            <dimensions><px width="350" height="450"/></dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <maxSizeKB>50</maxSizeKB>
+            <dimensions><px width="350" height="120"/></dimensions>
+        </document>
+    </documents>
+</entry>
+
+<entry id="hpsc" type="exam">
+    <name>HPSC</name>
+    <fullName>Haryana Public Service Commission</fullName>
+    <category>PSC</category>
+    <logo>hpsc.svg</logo>
+    <color>#1d4ed8</color>
+    <bg>#eff6ff</bg>
+
+    <documents>
+        <document id="photo" type="photo" required="true">
+            <label>Photograph</label>
+            <format>JPG,JPEG</format>
+            <maxSizeKB>100</maxSizeKB>
+            <dimensions><px width="350" height="450"/></dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <maxSizeKB>50</maxSizeKB>
+            <dimensions><px width="350" height="120"/></dimensions>
+        </document>
+    </documents>
+</entry>
+
+<!-- ========================================================= -->
+<!-- ENGINEERING ENTRANCE EXAMS -->
+<!-- ========================================================= -->
+
+<entry id="jee-main" type="exam">
+    <name>JEE Main</name>
+    <fullName>Joint Entrance Examination (Main)</fullName>
+    <category>Engineering</category>
+    <logo>nta.svg</logo>
+    <color>#2563eb</color>
+    <bg>#eff6ff</bg>
+
+    <documents>
+
+        <document id="photo" type="photo" required="true">
+            <label>Recent Passport Photograph</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>10</minSizeKB>
+            <maxSizeKB>200</maxSizeKB>
+            <dimensions>
+                <px width="300" height="400"/>
+            </dimensions>
+            <background>White or light background</background>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Candidate Signature</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>4</minSizeKB>
+            <maxSizeKB>30</maxSizeKB>
+            <dimensions>
+                <px width="300" height="100"/>
+            </dimensions>
+        </document>
+
+    </documents>
+</entry>
+
+<entry id="jee-advanced" type="exam">
+    <name>JEE Advanced</name>
+    <fullName>Joint Entrance Examination (Advanced)</fullName>
+    <category>Engineering</category>
+    <logo>jee-advanced.svg</logo>
+    <color>#1d4ed8</color>
+    <bg>#eff6ff</bg>
+
+    <documents>
+
+        <document id="photo" type="photo" required="true">
+            <label>Passport Photograph</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>10</minSizeKB>
+            <maxSizeKB>200</maxSizeKB>
+            <dimensions>
+                <px width="300" height="400"/>
+            </dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>4</minSizeKB>
+            <maxSizeKB>30</maxSizeKB>
+            <dimensions>
+                <px width="300" height="100"/>
+            </dimensions>
+        </document>
+
+    </documents>
+</entry>
+
+<entry id="gate" type="exam">
+    <name>GATE</name>
+    <fullName>Graduate Aptitude Test in Engineering</fullName>
+    <category>Engineering</category>
+    <logo>gate.svg</logo>
+    <color>#9333ea</color>
+    <bg>#faf5ff</bg>
+
+    <documents>
+
+        <document id="photo" type="photo" required="true">
+            <label>Passport Photograph</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>20</minSizeKB>
+            <maxSizeKB>1000</maxSizeKB>
+            <dimensions>
+                <px width="480" height="640"/>
+            </dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>5</minSizeKB>
+            <maxSizeKB>200</maxSizeKB>
+            <dimensions>
+                <px width="300" height="100"/>
+            </dimensions>
+        </document>
+
+    </documents>
+</entry>
+
+<entry id="bitsat" type="exam">
+    <name>BITSAT</name>
+    <fullName>Birla Institute of Technology and Science Admission Test</fullName>
+    <category>Engineering</category>
+    <logo>bits.svg</logo>
+    <color>#0f766e</color>
+    <bg>#ecfeff</bg>
+
+    <documents>
+
+        <document id="photo" type="photo" required="true">
+            <label>Passport Photograph</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>50</minSizeKB>
+            <maxSizeKB>200</maxSizeKB>
+            <dimensions>
+                <px width="300" height="400"/>
+            </dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>10</minSizeKB>
+            <maxSizeKB>100</maxSizeKB>
+            <dimensions>
+                <px width="300" height="100"/>
+            </dimensions>
+        </document>
+
+    </documents>
+</entry>
+
+<entry id="viteee" type="exam">
+    <name>VITEEE</name>
+    <fullName>VIT Engineering Entrance Examination</fullName>
+    <category>Engineering</category>
+    <logo>vit.svg</logo>
+    <color>#dc2626</color>
+    <bg>#fef2f2</bg>
+
+    <documents>
+
+        <document id="photo" type="photo" required="true">
+            <label>Photograph</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>10</minSizeKB>
+            <maxSizeKB>200</maxSizeKB>
+            <dimensions>
+                <px width="300" height="400"/>
+            </dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>5</minSizeKB>
+            <maxSizeKB>100</maxSizeKB>
+            <dimensions>
+                <px width="300" height="100"/>
+            </dimensions>
+        </document>
+
+    </documents>
+</entry>
+
+<entry id="srmjeee" type="exam">
+    <name>SRMJEEE</name>
+    <fullName>SRM Joint Engineering Entrance Examination</fullName>
+    <category>Engineering</category>
+    <logo>srm.svg</logo>
+    <color>#ea580c</color>
+    <bg>#fff7ed</bg>
+
+    <documents>
+
+        <document id="photo" type="photo" required="true">
+            <label>Photograph</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>10</minSizeKB>
+            <maxSizeKB>200</maxSizeKB>
+            <dimensions>
+                <px width="300" height="400"/>
+            </dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>5</minSizeKB>
+            <maxSizeKB>100</maxSizeKB>
+            <dimensions>
+                <px width="300" height="100"/>
+            </dimensions>
+        </document>
+
+    </documents>
+</entry>
+
+<entry id="comedk" type="exam">
+    <name>COMEDK UGET</name>
+    <fullName>Consortium of Medical, Engineering and Dental Colleges of Karnataka</fullName>
+    <category>Engineering</category>
+    <logo>comedk.svg</logo>
+    <color>#0891b2</color>
+    <bg>#ecfeff</bg>
+
+    <documents>
+
+        <document id="photo" type="photo" required="true">
+            <label>Passport Photograph</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>50</minSizeKB>
+            <maxSizeKB>200</maxSizeKB>
+            <dimensions>
+                <px width="300" height="400"/>
+            </dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>10</minSizeKB>
+            <maxSizeKB>100</maxSizeKB>
+            <dimensions>
+                <px width="300" height="100"/>
+            </dimensions>
+        </document>
+
+    </documents>
+</entry>
+
+<!-- ========================================================= -->
+<!-- ENGINEERING ENTRANCE EXAMS (Continued) -->
+<!-- ========================================================= -->
+
+<entry id="wbjee" type="exam">
+    <name>WBJEE</name>
+    <fullName>West Bengal Joint Entrance Examination</fullName>
+    <category>Engineering</category>
+    <logo>wbjee.svg</logo>
+    <color>#2563eb</color>
+    <bg>#eff6ff</bg>
+
+    <documents>
+        <document id="photo" type="photo" required="true">
+            <label>Passport Photograph</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>10</minSizeKB>
+            <maxSizeKB>200</maxSizeKB>
+            <dimensions><px width="300" height="400"/></dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>5</minSizeKB>
+            <maxSizeKB>100</maxSizeKB>
+            <dimensions><px width="300" height="100"/></dimensions>
+        </document>
+    </documents>
+</entry>
+
+<entry id="kcet" type="exam">
+    <name>KCET</name>
+    <fullName>Karnataka Common Entrance Test</fullName>
+    <category>Engineering</category>
+    <logo>kcet.svg</logo>
+    <color>#16a34a</color>
+    <bg>#f0fdf4</bg>
+
+    <documents>
+        <document id="photo" type="photo" required="true">
+            <label>Passport Photograph</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>10</minSizeKB>
+            <maxSizeKB>200</maxSizeKB>
+            <dimensions><px width="300" height="400"/></dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>5</minSizeKB>
+            <maxSizeKB>100</maxSizeKB>
+            <dimensions><px width="300" height="100"/></dimensions>
+        </document>
+    </documents>
+</entry>
+
+<entry id="ap-eamcet" type="exam">
+    <name>AP EAMCET</name>
+    <fullName>Andhra Pradesh Engineering, Agriculture  Pharmacy Common Entrance Test</fullName>
+    <category>Engineering</category>
+    <logo>apeapcet.svg</logo>
+    <color>#0284c7</color>
+    <bg>#f0f9ff</bg>
+
+    <documents>
+        <document id="photo" type="photo" required="true">
+            <label>Passport Photograph</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>10</minSizeKB>
+            <maxSizeKB>200</maxSizeKB>
+            <dimensions><px width="300" height="400"/></dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>5</minSizeKB>
+            <maxSizeKB>100</maxSizeKB>
+            <dimensions><px width="300" height="100"/></dimensions>
+        </document>
+    </documents>
+</entry>
+
+<entry id="ts-eamcet" type="exam">
+    <name>TS EAMCET</name>
+    <fullName>Telangana Engineering, Agriculture  Pharmacy Common Entrance Test</fullName>
+    <category>Engineering</category>
+    <logo>tgeapcet.svg</logo>
+    <color>#9333ea</color>
+    <bg>#faf5ff</bg>
+
+    <documents>
+        <document id="photo" type="photo" required="true">
+            <label>Passport Photograph</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>10</minSizeKB>
+            <maxSizeKB>200</maxSizeKB>
+            <dimensions><px width="300" height="400"/></dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>5</minSizeKB>
+            <maxSizeKB>100</maxSizeKB>
+            <dimensions><px width="300" height="100"/></dimensions>
+        </document>
+    </documents>
+</entry>
+
+<entry id="mht-cet" type="exam">
+    <name>MHT CET</name>
+    <fullName>Maharashtra Common Entrance Test</fullName>
+    <category>Engineering</category>
+    <logo>mhtcet.svg</logo>
+    <color>#2563eb</color>
+    <bg>#eff6ff</bg>
+
+    <documents>
+        <document id="photo" type="photo" required="true">
+            <label>Passport Photograph</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>15</minSizeKB>
+            <maxSizeKB>200</maxSizeKB>
+            <dimensions><px width="300" height="400"/></dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>5</minSizeKB>
+            <maxSizeKB>100</maxSizeKB>
+            <dimensions><px width="300" height="100"/></dimensions>
+        </document>
+    </documents>
+</entry>
+
+<entry id="keam" type="exam">
+    <name>KEAM</name>
+    <fullName>Kerala Engineering Architecture Medical</fullName>
+    <category>Engineering</category>
+    <logo>keam.svg</logo>
+    <color>#15803d</color>
+    <bg>#ecfdf5</bg>
+
+    <documents>
+        <document id="photo" type="photo" required="true">
+            <label>Passport Photograph</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>15</minSizeKB>
+            <maxSizeKB>200</maxSizeKB>
+            <dimensions><px width="300" height="400"/></dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>5</minSizeKB>
+            <maxSizeKB>100</maxSizeKB>
+            <dimensions><px width="300" height="100"/></dimensions>
+        </document>
+    </documents>
+</entry>
+
+<entry id="gujcet" type="exam">
+    <name>GUJCET</name>
+    <fullName>Gujarat Common Entrance Test</fullName>
+    <category>Engineering</category>
+    <logo>gujcet.svg</logo>
+    <color>#ea580c</color>
+    <bg>#fff7ed</bg>
+
+    <documents>
+        <document id="photo" type="photo" required="true">
+            <label>Passport Photograph</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>15</minSizeKB>
+            <maxSizeKB>200</maxSizeKB>
+            <dimensions><px width="300" height="400"/></dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>5</minSizeKB>
+            <maxSizeKB>100</maxSizeKB>
+            <dimensions><px width="300" height="100"/></dimensions>
+        </document>
+    </documents>
+</entry>
+
+<entry id="cusat-cat" type="exam">
+    <name>CUSAT CAT</name>
+    <fullName>Cochin University Common Admission Test</fullName>
+    <category>Engineering</category>
+    <logo>cusat.svg</logo>
+    <color>#0f766e</color>
+    <bg>#ecfeff</bg>
+
+    <documents>
+        <document id="photo" type="photo" required="true">
+            <label>Passport Photograph</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>15</minSizeKB>
+            <maxSizeKB>200</maxSizeKB>
+            <dimensions><px width="300" height="400"/></dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>5</minSizeKB>
+            <maxSizeKB>100</maxSizeKB>
+            <dimensions><px width="300" height="100"/></dimensions>
+        </document>
+    </documents>
+</entry>
+<!-- ========================================================= -->
+<!-- MEDICAL ENTRANCE EXAMS -->
+<!-- ========================================================= -->
+
+<entry id="neet-ug" type="exam">
+    <name>NEET UG</name>
+    <fullName>National Eligibility cum Entrance Test (UG)</fullName>
+    <category>Medical</category>
+    <logo>nta.svg</logo>
+    <color>#16a34a</color>
+    <bg>#f0fdf4</bg>
+
+    <documents>
+
+        <document id="photo" type="photo" required="true">
+            <label>Recent Passport Photograph</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>10</minSizeKB>
+            <maxSizeKB>200</maxSizeKB>
+            <dimensions>
+                <px width="300" height="400"/>
+            </dimensions>
+            <background>White background</background>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Candidate Signature</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>4</minSizeKB>
+            <maxSizeKB>30</maxSizeKB>
+            <dimensions>
+                <px width="300" height="100"/>
+            </dimensions>
+        </document>
+
+    </documents>
+</entry>
+
+<entry id="neet-pg" type="exam">
+    <name>NEET PG</name>
+    <fullName>National Eligibility cum Entrance Test (Post Graduate)</fullName>
+    <category>Medical</category>
+    <logo>nbe.svg</logo>
+    <color>#15803d</color>
+    <bg>#ecfdf5</bg>
+
+    <documents>
+
+        <document id="photo" type="photo" required="true">
+            <label>Passport Photograph</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>20</minSizeKB>
+            <maxSizeKB>200</maxSizeKB>
+            <dimensions>
+                <px width="300" height="400"/>
+            </dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>5</minSizeKB>
+            <maxSizeKB>100</maxSizeKB>
+            <dimensions>
+                <px width="300" height="100"/>
+            </dimensions>
+        </document>
+
+    </documents>
+</entry>
+
+<entry id="ini-cet" type="exam">
+    <name>INI CET</name>
+    <fullName>Institute of National Importance Combined Entrance Test</fullName>
+    <category>Medical</category>
+    <logo>aiims.svg</logo>
+    <color>#0f766e</color>
+    <bg>#ecfeff</bg>
+
+    <documents>
+
+        <document id="photo" type="photo" required="true">
+            <label>Passport Photograph</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>20</minSizeKB>
+            <maxSizeKB>200</maxSizeKB>
+            <dimensions>
+                <px width="300" height="400"/>
+            </dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>5</minSizeKB>
+            <maxSizeKB>100</maxSizeKB>
+            <dimensions>
+                <px width="300" height="100"/>
+            </dimensions>
+        </document>
+
+    </documents>
+</entry>
+
+<entry id="aiims-nursing" type="exam">
+    <name>AIIMS Nursing</name>
+    <fullName>AIIMS B.Sc Nursing Entrance Examination</fullName>
+    <category>Medical</category>
+    <logo>aiims.svg</logo>
+    <color>#0284c7</color>
+    <bg>#f0f9ff</bg>
+
+    <documents>
+
+        <document id="photo" type="photo" required="true">
+            <label>Passport Photograph</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>20</minSizeKB>
+            <maxSizeKB>200</maxSizeKB>
+            <dimensions>
+                <px width="300" height="400"/>
+            </dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>5</minSizeKB>
+            <maxSizeKB>100</maxSizeKB>
+            <dimensions>
+                <px width="300" height="100"/>
+            </dimensions>
+        </document>
+
+    </documents>
+</entry>
+
+<entry id="aiims-paramedical" type="exam">
+    <name>AIIMS Paramedical</name>
+    <fullName>AIIMS Paramedical Entrance Examination</fullName>
+    <category>Medical</category>
+    <logo>aiims.svg</logo>
+    <color>#2563eb</color>
+    <bg>#eff6ff</bg>
+
+    <documents>
+
+        <document id="photo" type="photo" required="true">
+            <label>Passport Photograph</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>20</minSizeKB>
+            <maxSizeKB>200</maxSizeKB>
+            <dimensions>
+                <px width="300" height="400"/>
+            </dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>5</minSizeKB>
+            <maxSizeKB>100</maxSizeKB>
+            <dimensions>
+                <px width="300" height="100"/>
+            </dimensions>
+        </document>
+
+    </documents>
+</entry>
+
+<entry id="gpat" type="exam">
+    <name>GPAT</name>
+    <fullName>Graduate Pharmacy Aptitude Test</fullName>
+    <category>Medical</category>
+    <logo>nta.svg</logo>
+    <color>#9333ea</color>
+    <bg>#faf5ff</bg>
+
+    <documents>
+
+        <document id="photo" type="photo" required="true">
+            <label>Passport Photograph</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>10</minSizeKB>
+            <maxSizeKB>200</maxSizeKB>
+            <dimensions>
+                <px width="300" height="400"/>
+            </dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>4</minSizeKB>
+            <maxSizeKB>30</maxSizeKB>
+            <dimensions>
+                <px width="300" height="100"/>
+            </dimensions>
+        </document>
+
+    </documents>
+</entry>
+
+<entry id="niper-jee" type="exam">
+    <name>NIPER JEE</name>
+    <fullName>National Institute of Pharmaceutical Education and Research JEE</fullName>
+    <category>Medical</category>
+    <logo>niper.svg</logo>
+    <color>#ea580c</color>
+    <bg>#fff7ed</bg>
+
+    <documents>
+
+        <document id="photo" type="photo" required="true">
+            <label>Passport Photograph</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>20</minSizeKB>
+            <maxSizeKB>200</maxSizeKB>
+            <dimensions>
+                <px width="300" height="400"/>
+            </dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>5</minSizeKB>
+            <maxSizeKB>100</maxSizeKB>
+            <dimensions>
+                <px width="300" height="100"/>
+            </dimensions>
+        </document>
+
+    </documents>
+</entry>
+
+
+<!-- ========================================================= -->
+<!-- MANAGEMENT / LAW / UNIVERSITY ENTRANCE EXAMS -->
+<!-- ========================================================= -->
+
+<entry id="cat" type="exam">
+    <name>CAT</name>
+    <fullName>Common Admission Test</fullName>
+    <category>MBA</category>
+    <logo>cat.svg</logo>
+    <color>#1d4ed8</color>
+    <bg>#eff6ff</bg>
+
+    <documents>
+
+        <document id="photo" type="photo" required="true">
+            <label>Recent Passport Photograph</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>30</minSizeKB>
+            <maxSizeKB>200</maxSizeKB>
+            <dimensions>
+                <px width="300" height="400"/>
+            </dimensions>
+            <background>White background</background>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Candidate Signature</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>10</minSizeKB>
+            <maxSizeKB>80</maxSizeKB>
+            <dimensions>
+                <px width="300" height="100"/>
+            </dimensions>
+        </document>
+
+    </documents>
+</entry>
+
+<entry id="xat" type="exam">
+    <name>XAT</name>
+    <fullName>Xavier Aptitude Test</fullName>
+    <category>MBA</category>
+    <logo>xat.svg</logo>
+    <color>#9333ea</color>
+    <bg>#faf5ff</bg>
+
+    <documents>
+
+        <document id="photo" type="photo" required="true">
+            <label>Passport Photograph</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>20</minSizeKB>
+            <maxSizeKB>200</maxSizeKB>
+            <dimensions>
+                <px width="300" height="400"/>
+            </dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>10</minSizeKB>
+            <maxSizeKB>80</maxSizeKB>
+            <dimensions>
+                <px width="300" height="100"/>
+            </dimensions>
+        </document>
+
+    </documents>
+</entry>
+
+<entry id="cmat" type="exam">
+    <name>CMAT</name>
+    <fullName>Common Management Admission Test</fullName>
+    <category>MBA</category>
+    <logo>nta.svg</logo>
+    <color>#16a34a</color>
+    <bg>#f0fdf4</bg>
+
+    <documents>
+
+        <document id="photo" type="photo" required="true">
+            <label>Passport Photograph</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>10</minSizeKB>
+            <maxSizeKB>200</maxSizeKB>
+            <dimensions>
+                <px width="300" height="400"/>
+            </dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>4</minSizeKB>
+            <maxSizeKB>30</maxSizeKB>
+            <dimensions>
+                <px width="300" height="100"/>
+            </dimensions>
+        </document>
+
+    </documents>
+</entry>
+
+<entry id="mat" type="exam">
+    <name>MAT</name>
+    <fullName>Management Aptitude Test</fullName>
+    <category>MBA</category>
+    <logo>mat.svg</logo>
+    <color>#0284c7</color>
+    <bg>#f0f9ff</bg>
+
+    <documents>
+
+        <document id="photo" type="photo" required="true">
+            <label>Photograph</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>20</minSizeKB>
+            <maxSizeKB>200</maxSizeKB>
+            <dimensions>
+                <px width="300" height="400"/>
+            </dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>10</minSizeKB>
+            <maxSizeKB>80</maxSizeKB>
+            <dimensions>
+                <px width="300" height="100"/>
+            </dimensions>
+        </document>
+
+    </documents>
+</entry>
+
+<entry id="nmat" type="exam">
+    <name>NMAT</name>
+    <fullName>NMIMS Management Aptitude Test</fullName>
+    <category>MBA</category>
+    <logo>nmat.svg</logo>
+    <color>#0f766e</color>
+    <bg>#ecfeff</bg>
+
+    <documents>
+
+        <document id="photo" type="photo" required="true">
+            <label>Passport Photograph</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>20</minSizeKB>
+            <maxSizeKB>200</maxSizeKB>
+            <dimensions>
+                <px width="300" height="400"/>
+            </dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>10</minSizeKB>
+            <maxSizeKB>80</maxSizeKB>
+            <dimensions>
+                <px width="300" height="100"/>
+            </dimensions>
+        </document>
+
+    </documents>
+</entry>
+
+<entry id="snap" type="exam">
+    <name>SNAP</name>
+    <fullName>Symbiosis National Aptitude Test</fullName>
+    <category>MBA</category>
+    <logo>snap.svg</logo>
+    <color>#ea580c</color>
+    <bg>#fff7ed</bg>
+
+    <documents>
+
+        <document id="photo" type="photo" required="true">
+            <label>Passport Photograph</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>20</minSizeKB>
+            <maxSizeKB>200</maxSizeKB>
+            <dimensions>
+                <px width="300" height="400"/>
+            </dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>10</minSizeKB>
+            <maxSizeKB>80</maxSizeKB>
+            <dimensions>
+                <px width="300" height="100"/>
+            </dimensions>
+        </document>
+
+    </documents>
+</entry>
+
+<entry id="clat" type="exam">
+    <name>CLAT</name>
+    <fullName>Common Law Admission Test</fullName>
+    <category>Law</category>
+    <logo>clat.svg</logo>
+    <color>#7c3aed</color>
+    <bg>#f3e8ff</bg>
+
+    <documents>
+
+        <document id="photo" type="photo" required="true">
+            <label>Passport Photograph</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>20</minSizeKB>
+            <maxSizeKB>500</maxSizeKB>
+            <dimensions>
+                <px width="300" height="400"/>
+            </dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>10</minSizeKB>
+            <maxSizeKB>100</maxSizeKB>
+            <dimensions>
+                <px width="300" height="100"/>
+            </dimensions>
+        </document>
+
+    </documents>
+</entry>
+
+<entry id="ailet" type="exam">
+    <name>AILET</name>
+    <fullName>All India Law Entrance Test</fullName>
+    <category>Law</category>
+    <logo>ailet.svg</logo>
+    <color>#b91c1c</color>
+    <bg>#fef2f2</bg>
+
+    <documents>
+
+        <document id="photo" type="photo" required="true">
+            <label>Passport Photograph</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>20</minSizeKB>
+            <maxSizeKB>500</maxSizeKB>
+            <dimensions>
+                <px width="300" height="400"/>
+            </dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>10</minSizeKB>
+            <maxSizeKB>100</maxSizeKB>
+            <dimensions>
+                <px width="300" height="100"/>
+            </dimensions>
+        </document>
+
+    </documents>
+</entry>
+
+<!-- ========================================================= -->
+<!-- UNIVERSITY / HIGHER EDUCATION / PROFESSIONAL EXAMS -->
+<!-- ========================================================= -->
+
+<entry id="cuet-ug" type="exam">
+    <name>CUET UG</name>
+    <fullName>Common University Entrance Test (UG)</fullName>
+    <category>University</category>
+    <logo>nta.svg</logo>
+    <color>#2563eb</color>
+    <bg>#eff6ff</bg>
+
+    <documents>
+        <document id="photo" type="photo" required="true">
+            <label>Recent Passport Photograph</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>10</minSizeKB>
+            <maxSizeKB>200</maxSizeKB>
+            <dimensions><px width="300" height="400"/></dimensions>
+            <background>White background</background>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Candidate Signature</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>4</minSizeKB>
+            <maxSizeKB>30</maxSizeKB>
+            <dimensions><px width="300" height="100"/></dimensions>
+        </document>
+    </documents>
+</entry>
+
+<entry id="cuet-pg" type="exam">
+    <name>CUET PG</name>
+    <fullName>Common University Entrance Test (PG)</fullName>
+    <category>University</category>
+    <logo>nta.svg</logo>
+    <color>#1d4ed8</color>
+    <bg>#eff6ff</bg>
+
+    <documents>
+        <document id="photo" type="photo" required="true">
+            <label>Passport Photograph</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>10</minSizeKB>
+            <maxSizeKB>200</maxSizeKB>
+            <dimensions><px width="300" height="400"/></dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>4</minSizeKB>
+            <maxSizeKB>30</maxSizeKB>
+            <dimensions><px width="300" height="100"/></dimensions>
+        </document>
+    </documents>
+</entry>
+
+<entry id="ugc-net" type="exam">
+    <name>UGC NET</name>
+    <fullName>University Grants Commission National Eligibility Test</fullName>
+    <category>Eligibility Test</category>
+    <logo>nta.svg</logo>
+    <color>#16a34a</color>
+    <bg>#f0fdf4</bg>
+
+    <documents>
+        <document id="photo" type="photo" required="true">
+            <label>Photograph</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>10</minSizeKB>
+            <maxSizeKB>200</maxSizeKB>
+            <dimensions><px width="300" height="400"/></dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>4</minSizeKB>
+            <maxSizeKB>30</maxSizeKB>
+            <dimensions><px width="300" height="100"/></dimensions>
+        </document>
+    </documents>
+</entry>
+
+<entry id="csir-net" type="exam">
+    <name>CSIR NET</name>
+    <fullName>Council of Scientific  Industrial Research NET</fullName>
+    <category>Eligibility Test</category>
+    <logo>csir.svg</logo>
+    <color>#0f766e</color>
+    <bg>#ecfeff</bg>
+
+    <documents>
+        <document id="photo" type="photo" required="true">
+            <label>Photograph</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>10</minSizeKB>
+            <maxSizeKB>200</maxSizeKB>
+            <dimensions><px width="300" height="400"/></dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>4</minSizeKB>
+            <maxSizeKB>30</maxSizeKB>
+            <dimensions><px width="300" height="100"/></dimensions>
+        </document>
+    </documents>
+</entry>
+
+<entry id="iit-jam" type="exam">
+    <name>IIT JAM</name>
+    <fullName>Joint Admission Test for Masters</fullName>
+    <category>Science</category>
+    <logo>jam.svg</logo>
+    <color>#9333ea</color>
+    <bg>#faf5ff</bg>
+
+    <documents>
+        <document id="photo" type="photo" required="true">
+            <label>Passport Photograph</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>20</minSizeKB>
+            <maxSizeKB>500</maxSizeKB>
+            <dimensions><px width="300" height="400"/></dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>5</minSizeKB>
+            <maxSizeKB>100</maxSizeKB>
+            <dimensions><px width="300" height="100"/></dimensions>
+        </document>
+    </documents>
+</entry>
+
+<entry id="nift" type="exam">
+    <name>NIFT</name>
+    <fullName>National Institute of Fashion Technology Entrance Examination</fullName>
+    <category>Design</category>
+    <logo>nift.svg</logo>
+    <color>#db2777</color>
+    <bg>#fdf2f8</bg>
+
+    <documents>
+        <document id="photo" type="photo" required="true">
+            <label>Passport Photograph</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>30</minSizeKB>
+            <maxSizeKB>300</maxSizeKB>
+            <dimensions><px width="300" height="400"/></dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>10</minSizeKB>
+            <maxSizeKB>100</maxSizeKB>
+            <dimensions><px width="300" height="100"/></dimensions>
+        </document>
+    </documents>
+</entry>
+
+<entry id="nid-dat" type="exam">
+    <name>NID DAT</name>
+    <fullName>National Institute of Design Design Aptitude Test</fullName>
+    <category>Design</category>
+    <logo>nid.svg</logo>
+    <color>#dc2626</color>
+    <bg>#fef2f2</bg>
+
+    <documents>
+        <document id="photo" type="photo" required="true">
+            <label>Photograph</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>30</minSizeKB>
+            <maxSizeKB>300</maxSizeKB>
+            <dimensions><px width="300" height="400"/></dimensions>
+        </document>
+
+        <document id="signature" type="signature" required="true">
+            <label>Signature</label>
+            <format>JPG,JPEG</format>
+            <minSizeKB>10</minSizeKB>
+            <maxSizeKB>100</maxSizeKB>
+            <dimensions><px width="300" height="100"/></dimensions>
+        </document>
+    </documents>
+</entry>
+
+<!-- ========================================================= -->
+<!-- PROFESSIONAL PROFILE PHOTOS -->
+<!-- ========================================================= -->
+
+<entry id="linkedin-profile" type="profile">
+    <name>LinkedIn Profile Photo</name>
+    <category>Professional</category>
+    <logo>linkedin.svg</logo>
+    <documents>
+        <document id="photo" type="photo" required="true">
+            <label>Profile Photo</label>
+            <format>JPG,JPEG,PNG</format>
+            <maxSizeKB>8000</maxSizeKB>
+            <dimensions>
+                <px width="400" height="400"/>
+            </dimensions>
+        </document>
+    </documents>
+</entry>
+
+<entry id="naukri-profile" type="profile">
+    <name>Naukri Profile Photo</name>
+    <category>Professional</category>
+    <logo>naukri.svg</logo>
+    <documents>
+        <document id="photo" type="photo" required="true">
+            <label>Profile Photo</label>
+            <format>JPG,JPEG,PNG</format>
+            <maxSizeKB>4000</maxSizeKB>
+            <dimensions>
+                <px width="400" height="400"/>
+            </dimensions>
+        </document>
+    </documents>
+</entry>
+
+<entry id="resume-photo" type="profile">
+    <name>Resume Photo</name>
+    <category>Professional</category>
+    <logo>resume.svg</logo>
+    <documents>
+        <document id="photo" type="photo" required="true">
+            <label>Professional Headshot</label>
+            <format>JPG,JPEG,PNG</format>
+            <maxSizeKB>1000</maxSizeKB>
+            <dimensions>
+                <px width="600" height="600"/>
+            </dimensions>
+            <background>White or plain background</background>
+        </document>
+    </documents>
+</entry>
+
+<entry id="passport-photo" type="document">
+    <name>Indian Passport Photo</name>
+    <category>Identity</category>
+    <logo>passport.svg</logo>
+    <documents>
+        <document id="photo" type="photo" required="true">
+            <label>Passport Photograph</label>
+            <format>JPG,JPEG</format>
+            <dimensions>
+                <mm width="35" height="45"/>
+            </dimensions>
+            <background>Plain white background</background>
+        </document>
+    </documents>
+</entry>
+
+<entry id="visa-photo" type="document">
+    <name>Visa Photograph</name>
     <category>Travel</category>
     <logo>visa.svg</logo>
-    <color>#b91c1c</color>
-    <bg>#ffecec</bg>
-    <date>Always available</date>
     <documents>
-      <document id="photo" type="photo" required="true">
-        <label>Visa Photo</label>
-        <format>JPG</format>
-        <maxSizeKB>240</maxSizeKB>
-        <dimensions>
-          <px width="600" height="600"/>
-          <physical width="2" height="2" unit="inch" dpi="300"/>
-        </dimensions>
-        <background>Plain white or off-white background</background>
-      </document>
+        <document id="photo" type="photo" required="true">
+            <label>Visa Photograph</label>
+            <format>JPG,JPEG</format>
+            <dimensions>
+                <mm width="35" height="45"/>
+            </dimensions>
+            <background>White background</background>
+        </document>
     </documents>
-  </entry>
-
-  <entry id="resume" type="service">
-    <name>Resume Photo</name>
-    <fullName>Professional Resume / LinkedIn Photo</fullName>
-    <category>Career</category>
-    <logo>resume.svg</logo>
-    <color>#7c3aed</color>
-    <bg>#f2ecff</bg>
-    <date>Always available</date>
-    <documents>
-      <document id="photo" type="photo" required="true">
-        <label>Professional Headshot</label>
-        <format>JPG,PNG</format>
-        <maxSizeKB>2048</maxSizeKB>
-        <dimensions>
-          <px width="400" height="400"/>
-        </dimensions>
-        <background>Neutral or blurred background</background>
-      </document>
-    </documents>
-  </entry>
-
+</entry>
 </catalog>
